@@ -42,6 +42,8 @@ from ..topology.mesh import MeshTopology
 from ..topology.star import StarTopology
 from ..topology.ring import RingTopology, create_ring_from_agents
 from ..topology.adaptive import AdaptiveTopology, TopologyMode
+from ..monitoring.metrics_collector import MetricsCollector, TaskMetric, TaskResult
+from ..monitoring.heartbeat_monitor import HeartbeatMonitor, HealthState
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +94,8 @@ class SwarmCoordinator(ICoordinator):
         self,
         topology_type: str = "mesh",
         consensus_threshold: float = 0.51,
-        root_agent_id: str = "alfred"
+        root_agent_id: str = "alfred",
+        enable_monitoring: bool = True
     ):
         """
         Initialize SwarmCoordinator with specified topology.
@@ -101,6 +104,7 @@ class SwarmCoordinator(ICoordinator):
             topology_type: Initial topology ("hierarchical", "mesh", "star", "ring", "adaptive")
             consensus_threshold: Minimum vote ratio for consensus (0.0-1.0)
             root_agent_id: Root agent ID for hierarchical topologies
+            enable_monitoring: Enable Phase 6A observability (default: True)
 
         Raises:
             ValueError: If topology_type not supported or consensus_threshold invalid
@@ -136,12 +140,28 @@ class SwarmCoordinator(ICoordinator):
         # State synchronization tracking
         self.synchronized_state: Dict[str, Any] = {}
 
+        # Phase 6A: Observability components
+        self.enable_monitoring = enable_monitoring
+        if enable_monitoring:
+            self.metrics_collector = MetricsCollector(
+                async_mode=True,  # Non-blocking metrics collection
+                storage=None  # Can be added later for persistence
+            )
+            self.heartbeat_monitor = HeartbeatMonitor(
+                interval_ms=5000,  # 5-second heartbeat interval
+                failure_threshold=3  # 15 seconds to detect failure
+            )
+            logger.info("Phase 6A observability enabled (MetricsCollector + HeartbeatMonitor)")
+        else:
+            self.metrics_collector = None
+            self.heartbeat_monitor = None
+
         # Initialize topology
         self._topology = self._create_topology(topology_type)
 
         logger.info(
             f"SwarmCoordinator initialized with {topology_type} topology "
-            f"(consensus_threshold={consensus_threshold})"
+            f"(consensus_threshold={consensus_threshold}, monitoring={enable_monitoring})"
         )
 
     def _create_topology(self, topology_type: str):
@@ -213,6 +233,11 @@ class SwarmCoordinator(ICoordinator):
         self.agent_registry[agent_id] = agent_metadata
         self.agent_states[agent_id] = AgentState.IDLE
         self.agent_heartbeats[agent_id] = time.time()
+
+        # Phase 6A: Start heartbeat monitoring
+        if self.enable_monitoring and self.heartbeat_monitor:
+            self.heartbeat_monitor.start_monitoring(agent_id)
+            self.heartbeat_monitor.record_heartbeat(agent_id)
 
         # Add to underlying topology
         agent_type = agent_metadata.get("type", "unknown")
@@ -300,6 +325,10 @@ class SwarmCoordinator(ICoordinator):
         del self.agent_registry[agent_id]
         del self.agent_states[agent_id]
         del self.agent_heartbeats[agent_id]
+
+        # Phase 6A: Stop heartbeat monitoring
+        if self.enable_monitoring and self.heartbeat_monitor:
+            self.heartbeat_monitor.stop_monitoring(agent_id)
 
         # Remove from underlying topology
         if self.topology_type == "hierarchical":
@@ -687,7 +716,24 @@ class SwarmCoordinator(ICoordinator):
         if failed_count > agent_count * 0.3:  # >30% failed
             health = TopologyHealth.CRITICAL
 
-        return {
+        # Phase 6A: Include health metrics from HeartbeatMonitor
+        health_metrics = {}
+        if self.enable_monitoring and self.heartbeat_monitor:
+            unhealthy_agent_ids = self.heartbeat_monitor.get_unhealthy_agents()
+            # Get health state for each unhealthy agent
+            unhealthy_details = {}
+            for agent_id in unhealthy_agent_ids:
+                health_state = self.heartbeat_monitor.check_agent_health(agent_id)
+                if health_state:
+                    unhealthy_details[agent_id] = health_state.value
+
+            health_metrics = {
+                "healthy_agents": agent_count - len(unhealthy_agent_ids),
+                "unhealthy_agents": len(unhealthy_agent_ids),
+                "unhealthy_details": unhealthy_details
+            }
+
+        base_info = {
             "type": self.topology_type,
             "agent_count": agent_count,
             "connection_count": connection_count,
@@ -697,6 +743,12 @@ class SwarmCoordinator(ICoordinator):
             "message_count": len(self.message_history),
             "topology_specific": topology_specific
         }
+
+        # Add Phase 6A metrics if available
+        if health_metrics:
+            base_info["health_metrics"] = health_metrics
+
+        return base_info
 
     def request_consensus(
         self,
@@ -993,6 +1045,10 @@ class SwarmCoordinator(ICoordinator):
 
         self.agent_heartbeats[agent_id] = time.time()
 
+        # Phase 6A: Record heartbeat in HeartbeatMonitor
+        if self.enable_monitoring and self.heartbeat_monitor:
+            self.heartbeat_monitor.record_heartbeat(agent_id)
+
         # Update state to ACTIVE if was FAILED
         if self.agent_states.get(agent_id) == AgentState.FAILED:
             self.agent_states[agent_id] = AgentState.ACTIVE
@@ -1034,6 +1090,169 @@ class SwarmCoordinator(ICoordinator):
             return self._topology.visualize()
 
         return f"{self.topology_type.upper()} Topology ({len(self.agent_registry)} agents)"
+
+    # ========================================================================
+    # Phase 6A: Observability Methods
+    # ========================================================================
+
+    def record_task_execution(
+        self,
+        task_id: str,
+        agent_id: str,
+        duration_ms: float,
+        success: bool,
+        tokens_used: int = 0,
+        files_changed: int = 0,
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> bool:
+        """
+        Record task execution metrics (Phase 6A).
+
+        Args:
+            task_id: Unique task identifier
+            agent_id: Agent that executed the task
+            duration_ms: Execution time in milliseconds
+            success: Whether task completed successfully
+            tokens_used: Number of tokens consumed (optional)
+            files_changed: Number of files modified (optional)
+            metadata: Additional task metadata (optional)
+
+        Returns:
+            True if metrics recorded, False if monitoring disabled
+
+        Example:
+            >>> coordinator.record_task_execution(
+            ...     task_id="task-001",
+            ...     agent_id="agent-backend",
+            ...     duration_ms=1250.5,
+            ...     success=True,
+            ...     tokens_used=1500,
+            ...     files_changed=3
+            ... )
+            True
+        """
+        if not self.enable_monitoring or not self.metrics_collector:
+            return False
+
+        result = TaskResult.SUCCESS if success else TaskResult.FAILURE
+
+        self.metrics_collector.record_task_metric(
+            task_id=task_id,
+            agent_id=agent_id,
+            duration_ms=duration_ms,
+            result=result,
+            tokens_used=tokens_used,
+            files_changed=files_changed,
+            metadata=metadata
+        )
+        logger.debug(
+            f"Task metric recorded: {task_id} by {agent_id} "
+            f"({duration_ms:.2f}ms, {result.value})"
+        )
+        return True
+
+    def get_agent_health_status(self, agent_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Get detailed health status for specific agent (Phase 6A).
+
+        Args:
+            agent_id: Agent identifier
+
+        Returns:
+            Health status dict or None if monitoring disabled: {
+                "agent_id": str,
+                "health_state": "healthy" | "degraded" | "critical" | "failed",
+                "last_heartbeat": timestamp,
+                "heartbeat_age_ms": float,
+                "is_monitored": bool
+            }
+
+        Example:
+            >>> health = coordinator.get_agent_health_status("agent-001")
+            >>> print(health["health_state"])
+            "healthy"
+        """
+        if not self.enable_monitoring or not self.heartbeat_monitor:
+            return None
+
+        if agent_id not in self.agent_registry:
+            return None
+
+        health_state = self.heartbeat_monitor.check_agent_health(agent_id)
+        history = self.heartbeat_monitor.get_heartbeat_history(agent_id=agent_id)
+
+        last_heartbeat_record = history[-1] if history else None  # Most recent is last
+        heartbeat_age_ms = 0.0
+        last_heartbeat_timestamp = None
+
+        if last_heartbeat_record:
+            # Timestamp is a float (time.time())
+            last_heartbeat_timestamp = last_heartbeat_record["timestamp"]
+            heartbeat_age_ms = (time.time() - last_heartbeat_timestamp) * 1000
+
+        return {
+            "agent_id": agent_id,
+            "health_state": health_state.value if health_state else "unknown",
+            "last_heartbeat": last_heartbeat_timestamp,
+            "heartbeat_age_ms": heartbeat_age_ms,
+            "is_monitored": True
+        }
+
+    def get_monitoring_stats(self) -> Dict[str, Any]:
+        """
+        Get comprehensive monitoring statistics (Phase 6A).
+
+        Returns:
+            Monitoring stats dict: {
+                "monitoring_enabled": bool,
+                "metrics_collector": {...},
+                "heartbeat_monitor": {...},
+                "swarm_health": {...}
+            }
+
+        Example:
+            >>> stats = coordinator.get_monitoring_stats()
+            >>> print(stats["monitoring_enabled"])
+            True
+        """
+        if not self.enable_monitoring:
+            return {"monitoring_enabled": False}
+
+        stats = {"monitoring_enabled": True}
+
+        # MetricsCollector stats
+        if self.metrics_collector:
+            task_stats = self.metrics_collector.get_task_stats()
+            stats["metrics_collector"] = {
+                "total_tasks": task_stats.get("total_tasks", 0),
+                "success_rate": task_stats.get("success_rate", 0.0),
+                "avg_duration_ms": task_stats.get("avg_duration_ms", 0.0),
+                "collection_overhead_ms": self.metrics_collector.get_collection_overhead()
+            }
+
+        # HeartbeatMonitor stats
+        if self.heartbeat_monitor:
+            monitoring_stats = self.heartbeat_monitor.get_monitoring_stats()
+            stats["heartbeat_monitor"] = monitoring_stats
+
+        # Swarm health summary
+        if self.heartbeat_monitor:
+            unhealthy_agent_ids = self.heartbeat_monitor.get_unhealthy_agents()
+            # Count agents by health state
+            health_distribution = {state.value: 0 for state in HealthState}
+            for agent_id in self.agent_registry:
+                health_state = self.heartbeat_monitor.check_agent_health(agent_id)
+                if health_state:
+                    health_distribution[health_state.value] += 1
+
+            stats["swarm_health"] = {
+                "total_agents": len(self.agent_registry),
+                "healthy_agents": len(self.agent_registry) - len(unhealthy_agent_ids),
+                "unhealthy_agents": len(unhealthy_agent_ids),
+                "health_distribution": health_distribution
+            }
+
+        return stats
 
 
 __all__ = [
