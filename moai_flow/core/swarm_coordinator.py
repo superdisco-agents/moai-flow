@@ -31,7 +31,7 @@ Example:
 """
 
 from typing import Any, Dict, List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 import time
 from enum import Enum
@@ -52,6 +52,14 @@ from ..coordination import (
     WeightedAlgorithm,
     ConflictResolver,
     StateSynchronizer,
+)
+
+# Phase 6C: Adaptive Optimization
+from ..optimization import (
+    PatternLearner,
+    PatternMatcher,
+    SelfHealer,
+    BottleneckDetector,
 )
 
 logger = logging.getLogger(__name__)
@@ -108,6 +116,7 @@ class SwarmCoordinator(ICoordinator):
         enable_consensus: bool = True,
         default_consensus: str = "quorum",
         enable_conflict_resolution: bool = True,
+        enable_adaptive_optimization: bool = True,
     ):
         """
         Initialize SwarmCoordinator with specified topology.
@@ -120,6 +129,7 @@ class SwarmCoordinator(ICoordinator):
             enable_consensus: Enable Phase 6B consensus algorithms (default: True)
             default_consensus: Default consensus algorithm ("quorum", "weighted", default: "quorum")
             enable_conflict_resolution: Enable Phase 6B conflict resolution (default: True)
+            enable_adaptive_optimization: Enable Phase 6C adaptive optimization (default: True)
 
         Raises:
             ValueError: If topology_type not supported or consensus_threshold invalid
@@ -206,6 +216,45 @@ class SwarmCoordinator(ICoordinator):
             self._conflict_resolver = None
             self._state_synchronizer = None
 
+        # Phase 6C: Adaptive Optimization
+        self._enable_adaptive = enable_adaptive_optimization
+        self._memory_provider = None  # Set later via initialize_memory_provider()
+
+        if enable_adaptive_optimization:
+            # Pattern learning
+            self._pattern_learner = PatternLearner(
+                min_occurrences=5,
+                confidence_threshold=0.7
+            )
+            self._pattern_matcher = PatternMatcher(
+                match_threshold=0.8
+            )
+
+            # Self-healing (requires coordinator reference)
+            self._self_healer = SelfHealer(
+                coordinator=self,
+                pattern_matcher=self._pattern_matcher,
+                memory=None,  # Set later when memory provider is available
+                auto_heal=True
+            )
+
+            # Bottleneck detection (requires monitoring to be enabled)
+            if enable_monitoring and self.metrics_collector:
+                self._bottleneck_detector = BottleneckDetector(
+                    metrics_storage=self.metrics_collector._storage,
+                    resource_controller=None,  # Set later when resource controller is available
+                    detection_window_ms=60000
+                )
+                logger.info("Phase 6C adaptive optimization enabled (full suite)")
+            else:
+                self._bottleneck_detector = None
+                logger.info("Phase 6C adaptive optimization enabled (limited: no monitoring)")
+        else:
+            self._pattern_learner = None
+            self._pattern_matcher = None
+            self._self_healer = None
+            self._bottleneck_detector = None
+
         # Initialize topology
         self._topology = self._create_topology(topology_type)
 
@@ -213,7 +262,8 @@ class SwarmCoordinator(ICoordinator):
             f"SwarmCoordinator initialized with {topology_type} topology "
             f"(consensus_threshold={consensus_threshold}, "
             f"monitoring={enable_monitoring}, consensus={enable_consensus}, "
-            f"conflict_resolution={enable_conflict_resolution})"
+            f"conflict_resolution={enable_conflict_resolution}, "
+            f"adaptive_optimization={enable_adaptive_optimization})"
         )
 
     def _create_topology(self, topology_type: str):
@@ -1119,7 +1169,7 @@ class SwarmCoordinator(ICoordinator):
         metadata: Optional[Dict[str, Any]] = None
     ) -> bool:
         """
-        Record task execution metrics (Phase 6A).
+        Record task execution metrics (Phase 6A) and pattern learning (Phase 6C).
 
         Args:
             task_id: Unique task identifier
@@ -1144,24 +1194,40 @@ class SwarmCoordinator(ICoordinator):
             ... )
             True
         """
-        if not self.enable_monitoring or not self.metrics_collector:
-            return False
+        # Phase 6A: Metrics collection
+        if self.enable_monitoring and self.metrics_collector:
+            result = TaskResult.SUCCESS if success else TaskResult.FAILURE
 
-        result = TaskResult.SUCCESS if success else TaskResult.FAILURE
+            self.metrics_collector.record_task_metric(
+                task_id=task_id,
+                agent_id=agent_id,
+                duration_ms=duration_ms,
+                result=result,
+                tokens_used=tokens_used,
+                files_changed=files_changed,
+                metadata=metadata
+            )
+            logger.debug(
+                f"Task metric recorded: {task_id} by {agent_id} "
+                f"({duration_ms:.2f}ms, {result.value})"
+            )
 
-        self.metrics_collector.record_task_metric(
-            task_id=task_id,
-            agent_id=agent_id,
-            duration_ms=duration_ms,
-            result=result,
-            tokens_used=tokens_used,
-            files_changed=files_changed,
-            metadata=metadata
-        )
-        logger.debug(
-            f"Task metric recorded: {task_id} by {agent_id} "
-            f"({duration_ms:.2f}ms, {result.value})"
-        )
+        # Phase 6C: Pattern learning
+        if self._enable_adaptive and self._pattern_learner:
+            event = {
+                "type": "task_complete",
+                "timestamp": datetime.now(timezone.utc),
+                "agent_id": agent_id,
+                "task_id": task_id,
+                "metadata": {
+                    "duration_ms": duration_ms,
+                    "result": "success" if success else "failure",
+                    "tokens_used": tokens_used,
+                    "files_changed": files_changed
+                }
+            }
+            self._pattern_learner.record_event(event)
+
         return True
 
     def get_agent_health_status(self, agent_id: str) -> Optional[Dict[str, Any]]:
@@ -1502,27 +1568,283 @@ class SwarmCoordinator(ICoordinator):
 
         return changes
 
+    # ========================================================================
+    # Phase 6C: Adaptive Optimization Methods
+    # ========================================================================
+
+    def record_event_for_learning(self, event: Dict[str, Any]) -> None:
+        """
+        Record event for pattern learning (Phase 6C).
+
+        Args:
+            event: Event data with required keys 'type' and 'timestamp'
+
+        Example:
+            >>> coordinator.record_event_for_learning({
+            ...     "type": "agent_start",
+            ...     "timestamp": datetime.now(timezone.utc),
+            ...     "agent_id": "agent-001"
+            ... })
+        """
+        if self._enable_adaptive and self._pattern_learner:
+            self._pattern_learner.record_event(event)
+
+    def learn_patterns(self) -> List[Any]:
+        """
+        Learn patterns from recorded events (Phase 6C).
+
+        Returns:
+            List of discovered Pattern objects
+
+        Example:
+            >>> patterns = coordinator.learn_patterns()
+            >>> for p in patterns:
+            ...     print(f"{p.pattern_type}: {p.description}")
+        """
+        if not self._enable_adaptive or not self._pattern_learner:
+            return []
+        return self._pattern_learner.learn_patterns()
+
+    def match_patterns(self, event: Dict[str, Any]) -> List[Any]:
+        """
+        Match event against learned patterns (Phase 6C).
+
+        Args:
+            event: Event to match
+
+        Returns:
+            List of PatternMatch objects
+
+        Example:
+            >>> matches = coordinator.match_patterns({
+            ...     "type": "task_complete",
+            ...     "timestamp": datetime.now(timezone.utc),
+            ...     "agent_id": "agent-001"
+            ... })
+        """
+        if not self._enable_adaptive or not self._pattern_matcher:
+            return []
+        return self._pattern_matcher.match(event)
+
+    def predict_next_event(self, current_events: List[Dict[str, Any]]) -> List[Any]:
+        """
+        Predict next likely events based on current sequence (Phase 6C).
+
+        Args:
+            current_events: Current event sequence
+
+        Returns:
+            List of Prediction objects
+
+        Example:
+            >>> predictions = coordinator.predict_next_event([
+            ...     {"type": "task_start", "timestamp": datetime.now(timezone.utc)},
+            ...     {"type": "task_execute", "timestamp": datetime.now(timezone.utc)}
+            ... ])
+        """
+        if not self._enable_adaptive or not self._pattern_matcher:
+            return []
+        return self._pattern_matcher.predict_next(current_events)
+
+    def enable_auto_healing(self, enabled: bool = True) -> None:
+        """
+        Enable or disable automatic self-healing (Phase 6C).
+
+        Args:
+            enabled: Enable (True) or disable (False) auto-healing
+
+        Example:
+            >>> coordinator.enable_auto_healing(True)
+        """
+        if self._enable_adaptive and self._self_healer:
+            self._self_healer._auto_heal = enabled
+
+    def heal_failure(self, failure: Any) -> Any:
+        """
+        Execute healing for detected failure (Phase 6C).
+
+        Args:
+            failure: Failure object from SelfHealer
+
+        Returns:
+            HealingResult object
+
+        Raises:
+            RuntimeError: If adaptive optimization not enabled
+
+        Example:
+            >>> failure = coordinator._self_healer.detect_failure(event)
+            >>> if failure:
+            ...     result = coordinator.heal_failure(failure)
+            ...     print(result.success)
+        """
+        if not self._enable_adaptive or not self._self_healer:
+            raise RuntimeError("Adaptive optimization not enabled.")
+        return self._self_healer.heal(failure)
+
+    def get_healing_stats(self) -> Dict[str, Any]:
+        """
+        Get self-healing statistics (Phase 6C).
+
+        Returns:
+            Healing stats dict
+
+        Example:
+            >>> stats = coordinator.get_healing_stats()
+            >>> print(stats["success_rate"])
+        """
+        if not self._enable_adaptive or not self._self_healer:
+            return {}
+        return self._self_healer.get_healing_stats()
+
+    def predict_failures(self) -> List[Any]:
+        """
+        Predict likely failures based on patterns (Phase 6C).
+
+        Returns:
+            List of PredictedFailure objects
+
+        Example:
+            >>> predictions = coordinator.predict_failures()
+            >>> for p in predictions:
+            ...     print(f"{p.predicted_type}: {p.probability:.2f}")
+        """
+        if not self._enable_adaptive or not self._self_healer:
+            return []
+        return self._self_healer.predict_failures()
+
+    def detect_bottlenecks(self) -> List[Any]:
+        """
+        Detect current performance bottlenecks (Phase 6C).
+
+        Returns:
+            List of Bottleneck objects
+
+        Example:
+            >>> bottlenecks = coordinator.detect_bottlenecks()
+            >>> for b in bottlenecks:
+            ...     print(f"{b.bottleneck_type}: {b.severity}")
+        """
+        if not self._enable_adaptive or not self._bottleneck_detector:
+            return []
+        if not self.enable_monitoring:
+            return []
+        return self._bottleneck_detector.detect_bottlenecks()
+
+    def analyze_performance(self, time_range_ms: int = 300000) -> Any:
+        """
+        Analyze performance over time range (Phase 6C).
+
+        Args:
+            time_range_ms: Time range in milliseconds (default: 5 minutes)
+
+        Returns:
+            PerformanceReport object or None
+
+        Example:
+            >>> report = coordinator.analyze_performance(time_range_ms=300000)
+            >>> if report:
+            ...     print(f"Bottlenecks: {len(report.bottlenecks_detected)}")
+        """
+        if not self._enable_adaptive or not self._bottleneck_detector:
+            return None
+        if not self.enable_monitoring:
+            return None
+        return self._bottleneck_detector.analyze_performance(time_range_ms)
+
+    def get_bottleneck_recommendations(self, bottleneck: Any) -> List[str]:
+        """
+        Get optimization recommendations for bottleneck (Phase 6C).
+
+        Args:
+            bottleneck: Bottleneck object
+
+        Returns:
+            List of recommendation strings
+
+        Example:
+            >>> bottlenecks = coordinator.detect_bottlenecks()
+            >>> if bottlenecks:
+            ...     recommendations = coordinator.get_bottleneck_recommendations(bottlenecks[0])
+        """
+        if not self._enable_adaptive or not self._bottleneck_detector:
+            return []
+        return self._bottleneck_detector.get_recommendations(bottleneck)
+
+    def initialize_memory_provider(self, memory_provider: Any) -> None:
+        """
+        Initialize memory provider for adaptive optimization (Phase 6C).
+
+        Args:
+            memory_provider: IMemoryProvider implementation
+
+        Example:
+            >>> from moai_flow.memory import InMemoryProvider
+            >>> memory = InMemoryProvider()
+            >>> coordinator.initialize_memory_provider(memory)
+        """
+        if not self._enable_adaptive:
+            return
+
+        self._memory_provider = memory_provider
+
+        # Update SelfHealer with memory provider
+        if self._self_healer:
+            self._self_healer._memory = memory_provider
+
+    def initialize_resource_controller(self, resource_controller: Any) -> None:
+        """
+        Initialize resource controller for bottleneck detection (Phase 6C).
+
+        Args:
+            resource_controller: IResourceController implementation
+
+        Example:
+            >>> from moai_flow.resources import ResourceController
+            >>> controller = ResourceController()
+            >>> coordinator.initialize_resource_controller(controller)
+        """
+        if not self._enable_adaptive:
+            return
+
+        # Update BottleneckDetector with resource controller
+        if self._bottleneck_detector:
+            self._bottleneck_detector._resources = resource_controller
+
     def get_coordination_stats(self) -> Dict[str, Any]:
         """
-        Get comprehensive coordination statistics including Phase 6A and 6B.
+        Get comprehensive coordination statistics including Phase 6A, 6B, and 6C.
 
         Returns:
             Coordination stats dict: {
                 "topology": {...},
                 "monitoring": {...},
-                "consensus": {...}
+                "consensus": {...},
+                "adaptive": {...}
             }
 
         Example:
             >>> stats = coordinator.get_coordination_stats()
             >>> print(stats.keys())
-            dict_keys(['topology', 'monitoring', 'consensus'])
+            dict_keys(['topology', 'monitoring', 'consensus', 'adaptive'])
         """
         stats = {
             "topology": self.get_topology_info(),
             "monitoring": self.get_monitoring_stats() if self.enable_monitoring else {},
             "consensus": self.get_consensus_stats() if self._enable_consensus else {},
         }
+
+        # Phase 6C: Adaptive optimization stats
+        if self._enable_adaptive:
+            adaptive_stats = {
+                "patterns_learned": len(self._pattern_learner.get_all_patterns()) if self._pattern_learner else 0,
+                "healing_stats": self.get_healing_stats(),
+                "bottlenecks_detected": len(self.detect_bottlenecks())
+            }
+            stats["adaptive"] = adaptive_stats
+        else:
+            stats["adaptive"] = {}
+
         return stats
 
 
