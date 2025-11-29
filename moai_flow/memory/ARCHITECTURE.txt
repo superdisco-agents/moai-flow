@@ -1,0 +1,118 @@
+
+# SemanticMemory Architecture
+
+┌──────────────────────────────────────────────────────────────────┐
+│                        MoAI-Flow Agents                          │
+│  (expert-backend, expert-frontend, manager-tdd, etc.)            │
+└────────────────┬─────────────────────────────────────────────────┘
+                 │
+                 │ store_knowledge()
+                 │ search_knowledge()
+                 │ retrieve_knowledge()
+                 │ record_success/failure()
+                 │
+                 ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                      SemanticMemory                              │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Knowledge Management                                     │   │
+│  │  • Store/Retrieve/Update/Delete                          │   │
+│  │  • Pattern-based search (LIKE queries)                   │   │
+│  │  • Category filtering                                    │   │
+│  │  • Project-scoped isolation                              │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Confidence Scoring                                       │   │
+│  │  • Success: +0.1 (max 1.0)                               │   │
+│  │  • Failure: -0.2 (min 0.0)                               │   │
+│  │  • Automatic pruning: < 0.3 after 30 days                │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Code Patterns                                            │   │
+│  │  • Store reusable patterns                               │   │
+│  │  • Usage tracking                                        │   │
+│  │  • Category organization                                 │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└────────────────┬─────────────────────────────────────────────────┘
+                 │
+                 │ transaction()
+                 │ _get_connection()
+                 │
+                 ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                         SwarmDB                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Connection Pooling                                       │   │
+│  │  • Thread-local connections                              │   │
+│  │  • Automatic initialization                              │   │
+│  │  • Transaction support (ACID)                            │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└────────────────┬─────────────────────────────────────────────────┘
+                 │
+                 │ SQL queries
+                 │
+                 ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                      SQLite Database                             │
+│              (.moai/memory/swarm.db)                             │
+│                                                                  │
+│  ┌────────────────────┐  ┌────────────────────┐                │
+│  │ semantic_knowledge │  │   code_patterns    │                │
+│  ├────────────────────┤  ├────────────────────┤                │
+│  │ • id (PK)          │  │ • id (PK)          │                │
+│  │ • project_id       │  │ • project_id       │                │
+│  │ • topic            │  │ • pattern_name     │                │
+│  │ • category         │  │ • category         │                │
+│  │ • knowledge (JSON) │  │ • pattern_data     │                │
+│  │ • confidence       │  │ • usage_count      │                │
+│  │ • access_count     │  │ • confidence       │                │
+│  │ • success_count    │  │ • tags (JSON)      │                │
+│  │ • failure_count    │  │ • timestamps       │                │
+│  │ • tags (JSON)      │  └────────────────────┘                │
+│  │ • timestamps       │                                         │
+│  └────────────────────┘                                         │
+│                                                                  │
+│  Indexes: project_id, topic, category, confidence               │
+└──────────────────────────────────────────────────────────────────┘
+
+# Data Flow
+
+1. Agent stores knowledge ──────────────────────┐
+                                                │
+2. SemanticMemory validates & processes ────────┤
+   • Clamp confidence (0.0 - 1.0)               │
+   • Generate UUID                              │
+   • Serialize JSON                             │
+                                                │
+3. SwarmDB creates transaction ─────────────────┤
+                                                │
+4. SQLite stores data ──────────────────────────┤
+                                                │
+5. Return knowledge_id ◄────────────────────────┘
+
+
+# Knowledge Lifecycle
+
+New Knowledge ──► confidence = 0.5
+    │
+    ├─► Success ──► +0.1 ──► Max 1.0
+    │
+    ├─► Failure ──► -0.2 ──► Min 0.0
+    │
+    └─► If confidence < 0.3 AND age > 30 days ──► PRUNED
+
+
+# Project Isolation
+
+Project A                    Project B
+    │                            │
+    ├─► knowledge_1              ├─► knowledge_3
+    ├─► knowledge_2              ├─► knowledge_4
+    └─► pattern_1                └─► pattern_2
+         │                            │
+         └────────────────────────────┘
+                      │
+                 SwarmDB
+            (same database,
+          filtered by project_id)
+

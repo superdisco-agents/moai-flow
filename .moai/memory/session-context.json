@@ -1,0 +1,24 @@
+{
+  "session_id": "session-20251129-161943",
+  "loaded_at": "2025-11-29T16:19:43.856641",
+  "context": {
+    "session_id": "session-20251129-161943",
+    "user_preferences": {
+      "communication": "concise",
+      "workflow": "tdd",
+      "expertise": "intermediate"
+    },
+    "recent_episodes": [],
+    "relevant_knowledge": [],
+    "suggested_next_actions": [
+      "Run /moai:1-plan to start new feature"
+    ],
+    "last_session_state": {
+      "last_updated": "2025-11-29T14:49:01.421903",
+      "current_branch": null,
+      "uncommitted_changes": null,
+      "uncommitted_files": 0,
+      "specs_in_progress": []
+    }
+  }
+}

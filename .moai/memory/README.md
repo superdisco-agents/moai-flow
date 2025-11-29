@@ -2,7 +2,11 @@
 
 ## Overview
 
-This directory contains the complete reference library for MoAI-ADK agents, skills, commands, and execution patterns. All documents are written in English as AI agent instructions.
+This directory contains:
+1. **Reference Library**: Complete documentation for agents, skills, commands, and patterns
+2. **Memory System**: Persistent storage for context continuity across sessions
+
+All documents are written in English as AI agent instructions.
 
 ## Memory Structure
 
@@ -190,5 +194,83 @@ def test_performance():
 - Restart MCP servers
 - Validate configuration files
 - Test individual components
+
+## Persistent Memory System
+
+### Memory Files
+
+| File | Purpose | Updated By |
+|------|---------|------------|
+| `swarm.db` | SQLite database for agent events and memory | SwarmDB, agent lifecycle hooks |
+| `last-session-state.json` | Last session's work state | SessionEnd hook |
+| `session-context.json` | Current session's loaded context | SessionStart hook |
+
+### SwarmDB Schema
+
+**Tables**:
+- `agent_events`: Agent lifecycle events (spawn, complete, error)
+- `agent_registry`: Active agent state tracking
+- `session_memory`: Cross-session memory (context hints, patterns)
+- `schema_info`: Database version tracking
+
+**Usage**:
+```python
+from moai_flow.memory.swarm_db import SwarmDB
+
+db = SwarmDB()
+db.insert_event({
+    "event_type": "spawn",
+    "agent_id": "agent-001",
+    "agent_type": "expert-backend",
+    "timestamp": "2025-11-29T16:00:00",
+    "metadata": {"prompt": "Design API"}
+})
+db.close()
+```
+
+### Session Hooks
+
+**SessionStart Hook** (`.claude/hooks/moai/session_start__load_memory.py`):
+- Loads user preferences from SwarmDB
+- Retrieves recent episodic memory (last 24h)
+- Loads semantic knowledge patterns
+- Displays memory summary to user
+- Suggests next actions based on last session
+
+**SessionEnd Hook** (future):
+- Saves current session state
+- Updates last-session-state.json
+- Stores work-in-progress SPECs
+
+### Memory Types
+
+1. **ContextHints**: User preferences (communication style, workflow, expertise)
+2. **EpisodicMemory**: Recent agent activity and events (24h retention)
+3. **SemanticMemory**: Long-term knowledge patterns
+4. **SessionState**: Work-in-progress tracking (branch, uncommitted changes, SPECs)
+
+### Quick Start
+
+```bash
+# Initialize SwarmDB
+python3 -c "from moai_flow.memory.swarm_db import SwarmDB; SwarmDB().close()"
+
+# Test SessionStart hook
+echo '{}' | python3 .claude/hooks/moai/session_start__load_memory.py | python3 -m json.tool
+
+# View recent events
+sqlite3 .moai/memory/swarm.db "SELECT * FROM agent_events ORDER BY timestamp DESC LIMIT 5;"
+
+# Check session context
+cat .moai/memory/session-context.json | python3 -m json.tool
+```
+
+### Documentation
+
+- **SessionStart Hook**: `.claude/hooks/moai/session_start__load_memory.md`
+- **SwarmDB**: `moai-flow/memory/swarm_db.py`
+- **Tests**: `tests/hooks/test_session_start_load_memory.py`
+
+---
 
 This memory library provides the complete knowledge base for MoAI-ADK agents, ensuring consistent, efficient, and reliable operation.

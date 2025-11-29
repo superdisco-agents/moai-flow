@@ -7,19 +7,29 @@ Provides persistent storage for:
 - Cross-session memory and context
 - Agent communication logs
 - Resource utilization metrics
+- Phase 6A Observability metrics (task, agent, swarm-level)
 
-Future Integration Points:
+Phase 6A Observability Extensions:
+- Task metrics: duration, result, token usage, files changed
+- Agent metrics: success rates, error counts, performance stats
+- Swarm metrics: health, throughput, latency, resource utilization
+- Optimized time-series indexing for fast queries
+- 30-day default retention with auto-cleanup
+
+Integration Points:
 - SemanticMemory: Long-term knowledge patterns
 - EpisodicMemory: Event and decision history
 - ContextHints: Session hints and user preferences
+- MetricsStorage: Dedicated metrics persistence (Phase 6A)
 
 Architecture:
 - SQLite backend for simplicity and zero-dependency deployment
 - Thread-safe operations with connection pooling
 - Schema migrations for version compatibility
 - JSON storage for flexible event metadata
+- Optimized indexing for time-series queries
 
-Schema Version: 1.0.0
+Schema Version: 2.0.0 (Phase 6A Extended)
 """
 
 import json
@@ -37,7 +47,7 @@ from typing import Any, Dict, List, Optional, Tuple
 # Database Schema
 # ============================================================================
 
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "2.0.0"
 
 SCHEMA_SQL = """
 -- Agent lifecycle events table
@@ -86,6 +96,48 @@ CREATE TABLE IF NOT EXISTS session_memory (
 CREATE INDEX IF NOT EXISTS idx_session_memory_session_id ON session_memory(session_id);
 CREATE INDEX IF NOT EXISTS idx_session_memory_memory_type ON session_memory(memory_type);
 CREATE INDEX IF NOT EXISTS idx_session_memory_key ON session_memory(key);
+
+-- Task metrics table (Phase 6A Observability)
+CREATE TABLE IF NOT EXISTS task_metrics (
+    task_id TEXT NOT NULL,
+    agent_id TEXT NOT NULL,
+    duration_ms INTEGER,
+    result TEXT NOT NULL,  -- 'success' | 'failure' | 'timeout' | 'cancelled'
+    tokens_used INTEGER DEFAULT 0,
+    files_changed INTEGER DEFAULT 0,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (task_id, timestamp)
+);
+
+CREATE INDEX IF NOT EXISTS idx_task_metrics_agent ON task_metrics(agent_id, timestamp);
+CREATE INDEX IF NOT EXISTS idx_task_metrics_time ON task_metrics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_task_metrics_result ON task_metrics(result, timestamp);
+
+-- Agent metrics table (Phase 6A Observability)
+CREATE TABLE IF NOT EXISTS agent_metrics (
+    metric_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    agent_id TEXT NOT NULL,
+    metric_type TEXT NOT NULL,  -- 'duration' | 'success_rate' | 'error_count' | 'throughput'
+    value REAL NOT NULL,
+    metadata TEXT,  -- JSON blob for additional data
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_agent_metrics_agent ON agent_metrics(agent_id, metric_type, timestamp);
+CREATE INDEX IF NOT EXISTS idx_agent_metrics_type ON agent_metrics(metric_type, timestamp);
+
+-- Swarm metrics table (Phase 6A Observability)
+CREATE TABLE IF NOT EXISTS swarm_metrics (
+    metric_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    swarm_id TEXT NOT NULL,
+    metric_type TEXT NOT NULL,  -- 'health' | 'throughput' | 'latency' | 'resource'
+    value REAL NOT NULL,
+    metadata TEXT,  -- JSON blob for additional data
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_swarm_metrics_swarm ON swarm_metrics(swarm_id, metric_type, timestamp);
+CREATE INDEX IF NOT EXISTS idx_swarm_metrics_type ON swarm_metrics(metric_type, timestamp);
 
 -- Schema version tracking
 CREATE TABLE IF NOT EXISTS schema_info (

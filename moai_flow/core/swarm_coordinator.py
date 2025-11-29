@@ -45,6 +45,15 @@ from ..topology.adaptive import AdaptiveTopology, TopologyMode
 from ..monitoring.metrics_collector import MetricsCollector, TaskMetric, TaskResult
 from ..monitoring.heartbeat_monitor import HeartbeatMonitor, HealthState
 
+# Phase 6B: Consensus & Conflict Resolution
+from ..coordination import (
+    ConsensusManager,
+    QuorumAlgorithm,
+    WeightedAlgorithm,
+    ConflictResolver,
+    StateSynchronizer,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -95,7 +104,10 @@ class SwarmCoordinator(ICoordinator):
         topology_type: str = "mesh",
         consensus_threshold: float = 0.51,
         root_agent_id: str = "alfred",
-        enable_monitoring: bool = True
+        enable_monitoring: bool = True,
+        enable_consensus: bool = True,
+        default_consensus: str = "quorum",
+        enable_conflict_resolution: bool = True,
     ):
         """
         Initialize SwarmCoordinator with specified topology.
@@ -105,6 +117,9 @@ class SwarmCoordinator(ICoordinator):
             consensus_threshold: Minimum vote ratio for consensus (0.0-1.0)
             root_agent_id: Root agent ID for hierarchical topologies
             enable_monitoring: Enable Phase 6A observability (default: True)
+            enable_consensus: Enable Phase 6B consensus algorithms (default: True)
+            default_consensus: Default consensus algorithm ("quorum", "weighted", default: "quorum")
+            enable_conflict_resolution: Enable Phase 6B conflict resolution (default: True)
 
         Raises:
             ValueError: If topology_type not supported or consensus_threshold invalid
@@ -156,12 +171,49 @@ class SwarmCoordinator(ICoordinator):
             self.metrics_collector = None
             self.heartbeat_monitor = None
 
+        # Phase 6B: Consensus & Conflict Resolution
+        self._enable_consensus = enable_consensus
+        self._enable_conflict_resolution = enable_conflict_resolution
+
+        if enable_consensus:
+            self._consensus_manager = ConsensusManager(
+                coordinator=self,
+                default_algorithm=default_consensus
+            )
+            # ConsensusManager already registers built-in algorithms (quorum=0.5, weighted=0.6)
+            # Override with custom consensus_threshold parameter
+            self._consensus_manager.algorithms["quorum"] = QuorumAlgorithm(
+                threshold=consensus_threshold
+            )
+            self._consensus_manager.algorithms["weighted"] = WeightedAlgorithm(
+                threshold=consensus_threshold
+            )
+            logger.info(
+                f"Phase 6B consensus enabled (default: {default_consensus}, "
+                f"threshold: {consensus_threshold})"
+            )
+        else:
+            self._consensus_manager = None
+
+        if enable_conflict_resolution:
+            self._conflict_resolver = ConflictResolver(strategy="lww")
+            # StateSynchronizer requires IMemoryProvider
+            # For now, we'll create it lazily when memory provider is available
+            # or pass None and check in methods
+            self._state_synchronizer = None
+            logger.info("Phase 6B conflict resolution enabled (strategy: lww)")
+        else:
+            self._conflict_resolver = None
+            self._state_synchronizer = None
+
         # Initialize topology
         self._topology = self._create_topology(topology_type)
 
         logger.info(
             f"SwarmCoordinator initialized with {topology_type} topology "
-            f"(consensus_threshold={consensus_threshold}, monitoring={enable_monitoring})"
+            f"(consensus_threshold={consensus_threshold}, "
+            f"monitoring={enable_monitoring}, consensus={enable_consensus}, "
+            f"conflict_resolution={enable_conflict_resolution})"
         )
 
     def _create_topology(self, topology_type: str):
@@ -753,131 +805,92 @@ class SwarmCoordinator(ICoordinator):
     def request_consensus(
         self,
         proposal: Dict[str, Any],
+        algorithm: Optional[str] = None,
         timeout_ms: int = 30000
     ) -> Dict[str, Any]:
         """
-        Request consensus decision from agents.
+        Request consensus decision from all agents using Phase 6B consensus algorithms.
 
-        Implements simple majority voting mechanism.
-        Broadcasts proposal to all agents and collects votes.
+        Routes to ConsensusManager for advanced consensus algorithms (quorum, weighted).
+        Falls back to simple majority voting if Phase 6B disabled.
 
         Args:
-            proposal: Proposal for consensus (must be JSON-serializable)
+            proposal: Proposal to vote on (must be JSON-serializable)
                 Expected keys:
                 - "proposal_id": str
                 - "description": str
                 - "options": List[str] (e.g., ["approve", "reject"])
+            algorithm: Consensus algorithm ("quorum", "weighted", or None for default)
             timeout_ms: Timeout in milliseconds (default: 30000)
 
         Returns:
-            Consensus result: {
+            Consensus result dict: {
                 "decision": "approved" | "rejected" | "timeout",
                 "votes_for": int,
                 "votes_against": int,
-                "abstain": int,
                 "threshold": float,
                 "participants": List[str],
-                "vote_details": Dict[str, str],
-                "timestamp": str
+                "algorithm_used": str,
+                "duration_ms": float,
+                "metadata": dict
             }
+
+        Raises:
+            RuntimeError: If consensus not enabled
 
         Example:
             >>> result = coordinator.request_consensus(
             ...     {
             ...         "proposal_id": "deploy-v2",
-            ...         "description": "Deploy version 2.0 to production",
-            ...         "options": ["approve", "reject"]
+            ...         "description": "Deploy version 2.0 to production"
             ...     },
+            ...     algorithm="quorum",
             ...     timeout_ms=30000
             ... )
             >>> print(result["decision"])
             "approved"
         """
-        start_time = time.time()
-        timeout_seconds = timeout_ms / 1000
+        if not self._enable_consensus:
+            raise RuntimeError(
+                "Consensus not enabled. Set enable_consensus=True when "
+                "initializing SwarmCoordinator."
+            )
 
         proposal_id = proposal.get("proposal_id", "unknown")
-
         logger.info(
-            f"Initiating consensus for proposal: {proposal_id} "
-            f"(timeout: {timeout_ms}ms)"
+            f"Requesting consensus for proposal: {proposal_id} "
+            f"(algorithm: {algorithm or 'default'}, timeout: {timeout_ms}ms)"
         )
 
-        # Broadcast proposal to all agents
-        broadcast_message = {
-            "type": "consensus_request",
-            "proposal": proposal,
-            "timestamp": datetime.utcnow().isoformat() + "Z"
-        }
-
-        # In real implementation, would wait for actual responses
-        # For now, simulate voting based on agent states
-
-        votes_for = 0
-        votes_against = 0
-        abstain = 0
-        vote_details: Dict[str, str] = {}
-        participants: List[str] = []
-
-        for agent_id, state in self.agent_states.items():
-            if state == AgentState.FAILED:
-                # Failed agents don't vote
-                continue
-
-            participants.append(agent_id)
-
-            # Simulate vote (in real impl, would collect actual responses)
-            # For now: ACTIVE/BUSY vote "approve", IDLE abstains
-            if state in [AgentState.ACTIVE, AgentState.BUSY]:
-                votes_for += 1
-                vote_details[agent_id] = "approve"
-            else:
-                abstain += 1
-                vote_details[agent_id] = "abstain"
-
-            # Check timeout
-            if time.time() - start_time > timeout_seconds:
-                logger.warning(f"Consensus request timed out after {timeout_ms}ms")
-                result = {
-                    "decision": "timeout",
-                    "votes_for": votes_for,
-                    "votes_against": votes_against,
-                    "abstain": abstain,
-                    "threshold": self.consensus_threshold,
-                    "participants": participants,
-                    "vote_details": vote_details,
-                    "timestamp": datetime.utcnow().isoformat() + "Z"
-                }
-                self.consensus_history.append(result)
-                return result
-
-        # Calculate decision
-        total_votes = votes_for + votes_against
-        if total_votes == 0:
-            decision = "timeout"  # No votes received
-        else:
-            vote_ratio = votes_for / total_votes
-            decision = "approved" if vote_ratio >= self.consensus_threshold else "rejected"
-
-        result = {
-            "decision": decision,
-            "votes_for": votes_for,
-            "votes_against": votes_against,
-            "abstain": abstain,
-            "threshold": self.consensus_threshold,
-            "participants": participants,
-            "vote_details": vote_details,
-            "timestamp": datetime.utcnow().isoformat() + "Z"
-        }
-
-        self.consensus_history.append(result)
-
-        logger.info(
-            f"Consensus result for {proposal_id}: {decision} "
-            f"({votes_for}/{total_votes} votes, threshold={self.consensus_threshold})"
+        # Use Phase 6B ConsensusManager
+        result = self._consensus_manager.request_consensus(
+            proposal=proposal,
+            algorithm=algorithm,
+            timeout_ms=timeout_ms
         )
 
-        return result
+        # Convert ConsensusResult to dict for backward compatibility
+        result_dict = {
+            "decision": result.decision.value if hasattr(result.decision, 'value') else result.decision,
+            "votes_for": result.votes_for,
+            "votes_against": result.votes_against,
+            "threshold": result.threshold,
+            "participants": result.participants,
+            "algorithm_used": result.algorithm_used,
+            "duration_ms": result.duration_ms,
+            "metadata": result.metadata
+        }
+
+        # Store in legacy consensus history for backward compatibility
+        self.consensus_history.append(result_dict)
+
+        logger.info(
+            f"Consensus result for {proposal_id}: {result_dict['decision']} "
+            f"(algorithm: {result_dict['algorithm_used']}, "
+            f"duration: {result_dict['duration_ms']:.2f}ms)"
+        )
+
+        return result_dict
 
     def synchronize_state(
         self,
@@ -1252,6 +1265,264 @@ class SwarmCoordinator(ICoordinator):
                 "health_distribution": health_distribution
             }
 
+        return stats
+
+    # ========================================================================
+    # Phase 6B: Consensus & Conflict Resolution Methods
+    # ========================================================================
+
+    def get_consensus_stats(self) -> Dict[str, Any]:
+        """
+        Get consensus statistics across all algorithms (Phase 6B).
+
+        Returns:
+            Consensus statistics dict: {
+                "consensus_enabled": bool,
+                "default_algorithm": str,
+                "algorithms": {...},
+                "total_requests": int
+            }
+
+        Example:
+            >>> stats = coordinator.get_consensus_stats()
+            >>> print(stats["default_algorithm"])
+            "quorum"
+        """
+        if not self._enable_consensus or not self._consensus_manager:
+            return {"consensus_enabled": False}
+
+        algorithm_stats = self._consensus_manager.get_algorithm_stats()
+
+        return {
+            "consensus_enabled": True,
+            "default_algorithm": self._consensus_manager.default_algorithm,
+            "algorithms": algorithm_stats,
+            "total_requests": len(self.consensus_history)
+        }
+
+    def resolve_conflicts(
+        self,
+        state_key: str,
+        conflicts: List[Any]
+    ) -> Any:
+        """
+        Resolve conflicts between multiple state versions (Phase 6B).
+
+        Uses configured conflict resolution strategy (default: LWW).
+
+        Args:
+            state_key: State identifier
+            conflicts: List of conflicting state versions
+
+        Returns:
+            Resolved state version
+
+        Raises:
+            RuntimeError: If conflict resolution not enabled
+            ValueError: If conflicts list is empty
+
+        Example:
+            >>> conflicts = [
+            ...     {"value": "v1", "timestamp": 1000},
+            ...     {"value": "v2", "timestamp": 2000}
+            ... ]
+            >>> resolved = coordinator.resolve_conflicts("config", conflicts)
+            >>> print(resolved["value"])
+            "v2"  # Latest wins with LWW strategy
+        """
+        if not self._enable_conflict_resolution or not self._conflict_resolver:
+            raise RuntimeError(
+                "Conflict resolution not enabled. Set enable_conflict_resolution=True "
+                "when initializing SwarmCoordinator."
+            )
+
+        if not conflicts:
+            raise ValueError("Conflicts list cannot be empty")
+
+        logger.info(
+            f"Resolving {len(conflicts)} conflicts for state key: {state_key}"
+        )
+
+        resolved = self._conflict_resolver.resolve(state_key, conflicts)
+
+        logger.info(
+            f"Conflict resolved for {state_key} using "
+            f"{self._conflict_resolver.strategy.value} strategy"
+        )
+
+        return resolved
+
+    def initialize_state_synchronizer(self, memory_provider):
+        """
+        Initialize StateSynchronizer with memory provider (Phase 6B).
+
+        Args:
+            memory_provider: IMemoryProvider implementation for state persistence
+
+        Raises:
+            RuntimeError: If conflict resolution not enabled
+        """
+        if not self._enable_conflict_resolution:
+            raise RuntimeError(
+                "Conflict resolution not enabled. Set enable_conflict_resolution=True "
+                "when initializing SwarmCoordinator."
+            )
+
+        if self._conflict_resolver is None:
+            raise RuntimeError("Conflict resolver not initialized")
+
+        self._state_synchronizer = StateSynchronizer(
+            coordinator=self,
+            memory=memory_provider,
+            conflict_resolver=self._conflict_resolver
+        )
+
+        logger.info("StateSynchronizer initialized with memory provider")
+
+    def synchronize_swarm_state(
+        self,
+        swarm_id: str,
+        state_key: str
+    ) -> bool:
+        """
+        Synchronize state across all agents in swarm (Phase 6B).
+
+        Uses StateSynchronizer for advanced state synchronization with
+        conflict detection and resolution.
+
+        Note: Requires StateSynchronizer to be initialized with memory provider
+        via initialize_state_synchronizer() first.
+
+        Args:
+            swarm_id: Unique swarm identifier
+            state_key: State to synchronize
+
+        Returns:
+            True if synchronized successfully
+
+        Raises:
+            RuntimeError: If state synchronization not enabled or not initialized
+
+        Example:
+            >>> # Initialize with memory provider first
+            >>> coordinator.initialize_state_synchronizer(memory_provider)
+            >>> # Then synchronize state
+            >>> success = coordinator.synchronize_swarm_state(
+            ...     swarm_id="swarm-001",
+            ...     state_key="task_queue"
+            ... )
+            >>> print(success)
+            True
+        """
+        if not self._enable_conflict_resolution:
+            raise RuntimeError(
+                "State synchronization not enabled. Set enable_conflict_resolution=True "
+                "when initializing SwarmCoordinator."
+            )
+
+        if self._state_synchronizer is None:
+            raise RuntimeError(
+                "StateSynchronizer not initialized. Call initialize_state_synchronizer() "
+                "with a memory provider first."
+            )
+
+        logger.info(
+            f"Synchronizing swarm state: swarm_id={swarm_id}, key={state_key}"
+        )
+
+        success = self._state_synchronizer.synchronize_state(swarm_id, state_key)
+
+        if success:
+            logger.info(
+                f"Swarm state synchronized: swarm_id={swarm_id}, key={state_key}"
+            )
+        else:
+            logger.warning(
+                f"Swarm state sync failed: swarm_id={swarm_id}, key={state_key}"
+            )
+
+        return success
+
+    def delta_sync(
+        self,
+        swarm_id: str,
+        since_version: int
+    ) -> List[Any]:
+        """
+        Get state changes since specific version (Phase 6B).
+
+        Uses delta synchronization for efficient state updates.
+
+        Note: Requires StateSynchronizer to be initialized with memory provider
+        via initialize_state_synchronizer() first.
+
+        Args:
+            swarm_id: Unique swarm identifier
+            since_version: Version number to sync from
+
+        Returns:
+            List of state changes since version
+
+        Raises:
+            RuntimeError: If state synchronization not enabled or not initialized
+
+        Example:
+            >>> # Initialize with memory provider first
+            >>> coordinator.initialize_state_synchronizer(memory_provider)
+            >>> # Then get delta changes
+            >>> changes = coordinator.delta_sync(
+            ...     swarm_id="swarm-001",
+            ...     since_version=10
+            ... )
+            >>> print(len(changes))
+            5  # 5 changes since version 10
+        """
+        if not self._enable_conflict_resolution:
+            raise RuntimeError(
+                "State synchronization not enabled. Set enable_conflict_resolution=True "
+                "when initializing SwarmCoordinator."
+            )
+
+        if self._state_synchronizer is None:
+            raise RuntimeError(
+                "StateSynchronizer not initialized. Call initialize_state_synchronizer() "
+                "with a memory provider first."
+            )
+
+        logger.debug(
+            f"Delta sync: swarm_id={swarm_id}, since_version={since_version}"
+        )
+
+        changes = self._state_synchronizer.delta_sync(swarm_id, since_version)
+
+        logger.debug(
+            f"Delta sync returned {len(changes)} changes "
+            f"(swarm={swarm_id}, since={since_version})"
+        )
+
+        return changes
+
+    def get_coordination_stats(self) -> Dict[str, Any]:
+        """
+        Get comprehensive coordination statistics including Phase 6A and 6B.
+
+        Returns:
+            Coordination stats dict: {
+                "topology": {...},
+                "monitoring": {...},
+                "consensus": {...}
+            }
+
+        Example:
+            >>> stats = coordinator.get_coordination_stats()
+            >>> print(stats.keys())
+            dict_keys(['topology', 'monitoring', 'consensus'])
+        """
+        stats = {
+            "topology": self.get_topology_info(),
+            "monitoring": self.get_monitoring_stats() if self.enable_monitoring else {},
+            "consensus": self.get_consensus_stats() if self._enable_consensus else {},
+        }
         return stats
 
 

@@ -4,8 +4,8 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org)
-[![Tests](https://img.shields.io/badge/tests-200%2B-green)](tests/)
-[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-318%2B-green)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-97%25-brightgreen)](tests/)
 [![Code Style](https://img.shields.io/badge/code%20style-black-black)](https://github.com/psf/black)
 [![TRUST 5](https://img.shields.io/badge/TRUST%205-compliant-success)](https://adk.mo.ai.kr)
 
@@ -54,7 +54,9 @@ MoAI-Flow는 MoAI-ADK를 위한 네이티브 다중 에이전트 스웜 조정 �
 - 실시간 토폴로지 전환 가능
 
 **Production-Ready**
-- 200+ comprehensive tests, 90%+ coverage
+- 318+ comprehensive tests, 97%+ coverage
+- 5 topology implementations (4,212 lines)
+- SwarmCoordinator engine (1,043 lines)
 - Performance-optimized SQLite with 12 indexes
 - Thread-safe operations with connection pooling
 - Robust error handling and graceful degradation
