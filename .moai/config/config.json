@@ -126,7 +126,19 @@
   "hooks": {
     "timeout_ms": 2000,
     "graceful_degradation": true,
-    "notes": "Hook execution timeout (milliseconds). Set graceful_degradation to true to continue even if a hook fails. Optimized to 2 seconds for faster performance."
+    "post_task": {
+      "pattern_collection": {
+        "enabled": true,
+        "priority": "low"
+      }
+    },
+    "on_error": {
+      "pattern_collection": {
+        "enabled": true,
+        "priority": "low"
+      }
+    },
+    "notes": "Hook execution timeout (milliseconds). Set graceful_degradation to true to continue even if a hook fails. Optimized to 2 seconds for faster performance. Pattern collection hooks run at LOW priority after other hooks."
   },
   "session_end": {
     "enabled": true,
@@ -202,6 +214,16 @@
     "spec_git_workflow": "develop_direct",
     "spec_git_workflow_configured": true,
     "notes": "RECOMMENDED for rapid development in personal projects. Options: 'develop_direct' (direct commits, no branches), 'feature_branch' (always create branches), 'per_spec' (ask user per SPEC). Set spec_git_workflow_configured: true after manual changes to prevent template merge overwrites."
+  },
+  "patterns": {
+    "analysis": {
+      "enabled": true,
+      "schedule": "weekly",
+      "report_location": ".moai/reports/patterns/",
+      "format": "both",
+      "retention_days": 90,
+      "_notes": "Pattern analysis configuration. Schedule options: 'daily', 'weekly', 'monthly'. Format options: 'json', 'markdown', 'both'."
+    }
   },
   "document_management": {
     "_meta": {},
@@ -337,5 +359,17 @@
       "notify_before_delete": true
     },
     "notes": "Document management system to prevent project root pollution. Enforces .moai/ hierarchy for all internal files. Auto-categorizes by file patterns. Cleanup policy preserves recent files."
+  },
+  "patterns": {
+    "enabled": true,
+    "storage": ".moai/patterns/",
+    "collect": {
+      "task_completion": true,
+      "error_occurrence": true,
+      "agent_usage": true,
+      "user_correction": false
+    },
+    "retention_days": 90,
+    "notes": "Pattern collection system for PRD-05 Phase 1. Collects execution patterns for future ML analysis. task_completion: agent performance, error_occurrence: failure patterns, agent_usage: usage statistics, user_correction: learning from corrections."
   }
 }
