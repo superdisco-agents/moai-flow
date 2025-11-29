@@ -2,23 +2,28 @@
 MoAI-Flow Core Module
 
 Provides the core coordination infrastructure:
-- SwarmCoordinator: Main orchestration engine
-- AgentRegistry: Agent discovery and registration
-- MessageBus: Inter-agent communication
+- SwarmCoordinator: Main orchestration engine (✅ Implemented)
 - Interfaces: Abstract protocols (IMemoryProvider, ICoordinator, IResourceController)
+- AgentRegistry: Agent discovery and registration (Future)
+- MessageBus: Inter-agent communication (Future)
 """
 
-# Future exports (Phase 3+)
-# from .swarm import SwarmCoordinator
+# Phase 5 exports
+from .swarm_coordinator import SwarmCoordinator, AgentState, TopologyHealth
+from .interfaces import IMemoryProvider, ICoordinator, IResourceController, Priority
+
+# Future exports (Phase 6+)
 # from .agent_registry import AgentRegistry
 # from .message_bus import MessageBus
-# from .interfaces import IMemoryProvider, ICoordinator, IResourceController
 
 __all__ = [
-    # Future: "SwarmCoordinator",
+    "SwarmCoordinator",
+    "AgentState",
+    "TopologyHealth",
+    "IMemoryProvider",
+    "ICoordinator",
+    "IResourceController",
+    "Priority",
     # Future: "AgentRegistry",
     # Future: "MessageBus",
-    # Future: "IMemoryProvider",
-    # Future: "ICoordinator",
-    # Future: "IResourceController",
 ]

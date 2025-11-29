@@ -2,24 +2,39 @@
 MoAI-Flow Topology Module
 
 Network topologies for multi-agent coordination:
-- Mesh: Full connectivity between all agents
-- Hierarchical: Tree structure with Alfred as root
-- Star: Hub-and-spoke pattern
-- Ring: Sequential chain
-- Adaptive: Dynamic topology switching based on workload
+- Mesh: Full connectivity between all agents (✅ Implemented)
+- Hierarchical: Tree structure with Alfred as root (✅ Implemented)
+- Star: Hub-and-spoke pattern (✅ Implemented)
+- Ring: Sequential chain (✅ Implemented)
+- Adaptive: Dynamic topology switching based on workload (✅ Implemented)
 """
 
-# Future exports (Phase 5)
-# from .mesh import MeshTopology
-# from .hierarchical import HierarchicalTopology
-# from .star import StarTopology
-# from .ring import RingTopology
-# from .adaptive import AdaptiveTopology
+# Phase 5 exports - All topologies now implemented
+from .hierarchical import HierarchicalTopology, Agent
+from .ring import RingTopology, RingAgent, create_ring_from_agents
+from .star import StarTopology
+from .star import Agent as StarAgent
+from .mesh import MeshTopology
+from .mesh import Agent as MeshAgent, Message
+from .adaptive import AdaptiveTopology, TopologyMode, PerformanceMetrics
 
 __all__ = [
-    # Future: "MeshTopology",
-    # Future: "HierarchicalTopology",
-    # Future: "StarTopology",
-    # Future: "RingTopology",
-    # Future: "AdaptiveTopology",
+    # Hierarchical
+    "HierarchicalTopology",
+    "Agent",
+    # Ring
+    "RingTopology",
+    "RingAgent",
+    "create_ring_from_agents",
+    # Star
+    "StarTopology",
+    "StarAgent",
+    # Mesh
+    "MeshTopology",
+    "MeshAgent",
+    "Message",
+    # Adaptive
+    "AdaptiveTopology",
+    "TopologyMode",
+    "PerformanceMetrics",
 ]
