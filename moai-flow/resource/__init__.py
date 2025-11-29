@@ -7,13 +7,30 @@ Resource control and allocation:
 - PriorityQueue: Task priority management
 """
 
+from .token_budget import (
+    TokenBudget,
+    BudgetConfig,
+    SwarmAllocation,
+    allocate_swarm,
+    consume_tokens,
+    get_swarm_balance,
+    reset_swarm,
+    get_budget_status,
+)
+
 # Future exports (Phase 3)
-# from .token_budget import TokenBudget
 # from .agent_quota import AgentQuota
 # from .priority_queue import PriorityQueue
 
 __all__ = [
-    # Future: "TokenBudget",
+    "TokenBudget",
+    "BudgetConfig",
+    "SwarmAllocation",
+    "allocate_swarm",
+    "consume_tokens",
+    "get_swarm_balance",
+    "reset_swarm",
+    "get_budget_status",
     # Future: "AgentQuota",
     # Future: "PriorityQueue",
 ]

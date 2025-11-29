@@ -2,6 +2,17 @@
 
 > Multi-agent swarm infrastructure for MoAI
 
+## Status
+
+| Field | Value |
+|-------|-------|
+| **Current Status** | In Progress |
+| **Phase** | Phase 3 - Core Infrastructure |
+| **Progress** | 40% (Core interfaces and SwarmDB complete) |
+| **Last Updated** | 2025-11-29 |
+
+---
+
 ## Overview
 
 | Field | Value |
@@ -10,6 +21,39 @@
 | **Effort** | High (2-3 months) |
 | **Impact** | High |
 | **Type** | Infrastructure |
+
+---
+
+## Implementation Progress
+
+### Phase 3: Core Infrastructure ✅
+
+- [x] IMemoryProvider interface designed
+- [x] ICoordinator interface designed
+- [x] IResourceController interface designed
+- [x] SwarmDB SQLite wrapper implemented
+- [x] TokenBudget allocator implemented
+- [x] AgentLifecycle hooks implemented
+- [x] Interface tests created (90%+ coverage)
+- [x] SwarmDB tests created (90%+ coverage)
+- [ ] Integration testing complete
+- [ ] Performance benchmarks complete
+
+### Phase 4: Memory System (Pending)
+
+- [ ] ContextHints implementation
+- [ ] SemanticMemory implementation
+- [ ] EpisodicMemory implementation
+- [ ] SessionStart/End integration
+
+### Phase 5: Topology Implementation (Pending)
+
+- [ ] Hierarchical topology
+- [ ] Mesh topology
+- [ ] Star topology
+- [ ] Ring topology
+- [ ] Adaptive topology
+- [ ] SwarmCoordinator main engine
 
 ---
 
@@ -292,6 +336,51 @@ Use swarm when:
 - Shared state needed
 - Complex multi-step workflows
 ```
+
+---
+
+## Phase 3 Architecture Decisions
+
+### Interface Design
+
+**IMemoryProvider**: Namespace-based memory with persistence support
+- Enables agents to access shared memory with semantic namespace organization
+- Supports both volatile and persistent memory layers
+- Integrated with SwarmDB for durability
+
+**ICoordinator**: Multi-topology agent coordination
+- Abstracts topology management and agent communication
+- Supports multiple topology patterns (hierarchical, mesh, star, ring, adaptive)
+- Provides consensus and state synchronization mechanisms
+
+**IResourceController**: Token budget and agent quota management
+- Allocates token budgets across swarm members
+- Tracks resource consumption in real-time
+- Enforces quota limits and prevents resource exhaustion
+
+### Implementation Details
+
+**SwarmDB**: SQLite-based storage at `.swarm/memory.db`
+- Provides durable memory persistence for swarm state
+- Supports structured query access to agent memory
+- Enables temporal queries for episodic memory
+
+**TokenBudget**: Integrated with `.moai/config/config.json`
+- Reads budget allocations from project configuration
+- Tracks per-agent and per-swarm token consumption
+- Provides allocation and rebalancing mechanisms
+
+**AgentLifecycle**: Hooks into `.claude/hooks/moai/lib/`
+- Manages agent initialization and teardown
+- Handles graceful shutdown and state preservation
+- Integrates with MoAI hook system for extensibility
+
+### Test Coverage
+
+- Interface tests: 90%+ coverage per TRUST 5 standards
+- SwarmDB tests: 90%+ coverage including edge cases
+- Integration tests: In progress
+- Performance benchmarks: Pending
 
 ---
 
