@@ -8,15 +8,28 @@ Cross-session memory system:
 - ContextHints: Session hints and user preferences
 """
 
+from .swarm_db import SwarmDB
+from .context_hints import (
+    ContextHints,
+    PreferenceCategory,
+    ExpertiseLevel,
+    WorkflowPreference,
+    CommunicationStyle,
+    ValidationStrictness,
+)
+
 # Future exports (Phase 4)
-# from .swarm_db import SwarmDB
 # from .semantic_memory import SemanticMemory
 # from .episodic_memory import EpisodicMemory
-# from .context_hints import ContextHints
 
 __all__ = [
-    # Future: "SwarmDB",
+    "SwarmDB",
+    "ContextHints",
+    "PreferenceCategory",
+    "ExpertiseLevel",
+    "WorkflowPreference",
+    "CommunicationStyle",
+    "ValidationStrictness",
     # Future: "SemanticMemory",
     # Future: "EpisodicMemory",
-    # Future: "ContextHints",
 ]
