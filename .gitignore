@@ -3,6 +3,11 @@
 .claude-flow/
 .swarm/
 
+# Legacy directories in _config/ templates
+_config/**/.claude-flow/
+_config/**/.hive-mind/
+_config/**/.swarm/
+
 # Python
 __pycache__/
 *.py[cod]
