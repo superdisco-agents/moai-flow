@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "name": "Figma Dev Mode MCP Server",
+    "description": "Design analysis and design-to-code conversion for MoAI agents",
+    "status": "optional",
+    "version": "local"
+  },
+  "server": {
+    "type": "sse",
+    "url": "http://127.0.0.1:3845/sse"
+  },
+  "tools": [
+    "mcp__figma-dev-mode-mcp-server__get_design_context",
+    "mcp__figma-dev-mode-mcp-server__get_variable_defs",
+    "mcp__figma-dev-mode-mcp-server__get_screenshot",
+    "mcp__figma-dev-mode-mcp-server__get_metadata",
+    "mcp__figma-dev-mode-mcp-server__get_figjam"
+  ],
+  "usedBy": [
+    "mcp-figma",
+    "mcp-figma-integrator",
+    "expert-uiux",
+    "ui-ux-expert"
+  ],
+  "features": {
+    "design_analysis": true,
+    "design_to_code": true,
+    "design_tokens_extraction": true,
+    "component_analysis": true,
+    "wcag_accessibility_validation": true
+  },
+  "requirements": {
+    "figma_desktop": "Figma Desktop app must be installed and running",
+    "dev_mode": "Dev Mode must be enabled in Figma",
+    "port_3845": "Port 3845 must be available for local SSE server"
+  },
+  "environment": {},
+  "notes": "Optional server. Requires Figma Desktop with Dev Mode enabled. Connection via local SSE on port 3845."
+}

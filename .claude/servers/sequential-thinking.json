@@ -1,0 +1,33 @@
+{
+  "_meta": {
+    "name": "Sequential-Thinking MCP Server",
+    "description": "Complex reasoning and architecture design for MoAI agents",
+    "status": "required",
+    "version": "latest"
+  },
+  "server": {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-sequential-thinking@latest"]
+  },
+  "tools": [
+    "mcp__sequential-thinking__sequentialthinking"
+  ],
+  "usedBy": [
+    "mcp-sequential-thinking"
+  ],
+  "features": {
+    "complex_reasoning": true,
+    "architecture_design": true,
+    "multi_step_analysis": true,
+    "problem_decomposition": true,
+    "hypothesis_verification": true
+  },
+  "activationConditions": [
+    "Request complexity > medium (10+ files, architecture changes)",
+    "Dependencies > 3 or more",
+    "SPEC generation or Plan agent invocation",
+    "Keywords: 'complex', 'design', 'optimize', 'analyze' in user request"
+  ],
+  "environment": {},
+  "notes": "No environment variables required. Auto-activated for complex tasks. Supports branching and revision of thoughts."
+}

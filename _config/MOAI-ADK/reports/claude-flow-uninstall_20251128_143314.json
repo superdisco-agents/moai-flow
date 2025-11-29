@@ -1,0 +1,42 @@
+{
+  "timestamp": "2025-11-28T14:33:14.666694",
+  "mode": "dry-run",
+  "backup_enabled": false,
+  "base_directory": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+  "directories": [
+    {
+      "name": ".claude-flow",
+      "path": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk/.claude-flow",
+      "size": 14823,
+      "size_formatted": "14.48 KB",
+      "type": "directory",
+      "removed": null
+    },
+    {
+      "name": ".swarm",
+      "path": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk/.swarm",
+      "size": 78096,
+      "size_formatted": "76.27 KB",
+      "type": "directory",
+      "removed": null
+    },
+    {
+      "name": ".specstory",
+      "path": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk/.specstory",
+      "size": 3216328,
+      "size_formatted": "3.07 MB",
+      "type": "directory",
+      "removed": null
+    }
+  ],
+  "packages": [],
+  "total_size_bytes": 3309247,
+  "total_size_formatted": "3.16 MB",
+  "errors": [],
+  "summary": {
+    "directories_found": 3,
+    "packages_found": 0,
+    "items_removed": 0,
+    "errors_count": 0
+  }
+}

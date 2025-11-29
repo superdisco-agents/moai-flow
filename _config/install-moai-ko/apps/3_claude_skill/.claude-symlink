@@ -1,0 +1,395 @@
+# .claude-symlink Instructions
+
+This file contains instructions for symlinking the Claude Skill installer to Claude Code's skills directory.
+
+## What is this file?
+
+This placeholder file indicates where the actual `.claude/` directory should be located. The `.claude/` directory contains the skill definition for the MoAI-ADK installer.
+
+## Expected Directory Structure
+
+```
+3_claude_skill/
+├── README.md                    # Main documentation
+├── SETUP.md                     # Setup instructions
+├── COMPLETION.md                # Post-installation guide
+├── .claude-symlink              # This file
+└── .claude/                     # Actual skill definition (to be created)
+    ├── skill.md                 # Main skill file
+    ├── prompts/
+    │   ├── install.md           # Installation prompts
+    │   ├── verify.md            # Verification prompts
+    │   ├── korean-setup.md      # Korean setup prompts
+    │   └── troubleshoot.md      # Troubleshooting prompts
+    └── config/
+        ├── triggers.json        # Trigger phrases
+        └── settings.json        # Skill settings
+```
+
+## Creating the .claude/ Directory
+
+Since the actual Claude Skill system and file structure for MoAI-ADK is not yet fully defined, you'll need to create the `.claude/` directory structure manually.
+
+### Step 1: Create Directory Structure
+
+```bash
+cd /Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk/_config/install-moai-ko/apps/3_claude_skill
+
+mkdir -p .claude/prompts
+mkdir -p .claude/config
+```
+
+### Step 2: Create Skill Definition
+
+Create `.claude/skill.md`:
+
+```markdown
+# MoAI-ADK Installer Skill
+
+Autonomous installation of MoAI-ADK with Korean language support.
+
+## Capabilities
+
+- Install MoAI-ADK package
+- Setup Korean fonts and locale
+- Configure Korean NLP features
+- Verify installation
+- Troubleshoot issues
+
+## Triggers
+
+- "install moai-adk"
+- "setup moai-adk"
+- "moai-adk 설치"
+- Korean language detection
+
+## Auto-Detection
+
+This skill automatically detects:
+- System locale (Korean)
+- User language preference
+- Existing installations
+- System requirements
+```
+
+### Step 3: Create Trigger Configuration
+
+Create `.claude/config/triggers.json`:
+
+```json
+{
+  "install_triggers": [
+    "install moai-adk",
+    "setup moai-adk",
+    "add moai-adk",
+    "moai-adk 설치",
+    "moai-adk setup",
+    "set up mixture of agents"
+  ],
+  "verify_triggers": [
+    "verify moai-adk",
+    "check moai-adk",
+    "is moai-adk installed",
+    "moai-adk status",
+    "moai-adk 확인"
+  ],
+  "korean_triggers": [
+    "korean support",
+    "한국어 지원",
+    "korean language",
+    "korean fonts",
+    "korean nlp"
+  ],
+  "troubleshoot_triggers": [
+    "moai-adk not working",
+    "installation failed",
+    "help with moai-adk",
+    "fix moai-adk",
+    "문제 해결"
+  ]
+}
+```
+
+### Step 4: Create Skill Settings
+
+Create `.claude/config/settings.json`:
+
+```json
+{
+  "skill_name": "moai-installer",
+  "version": "1.0.0",
+  "description": "Autonomous MoAI-ADK installer with Korean support",
+  "auto_detect_korean": true,
+  "default_install_location": "~/.moai",
+  "use_uv_installer": true,
+  "verbose_output": true,
+  "korean_detection": {
+    "enabled": true,
+    "threshold": 0.7,
+    "signals": {
+      "locale": { "weight": 1.0, "enabled": true },
+      "message_language": { "weight": 1.0, "enabled": true },
+      "project_files": { "weight": 0.7, "enabled": true },
+      "claude_memory": { "weight": 0.8, "enabled": true }
+    }
+  },
+  "fallback_installer": "uv_cli"
+}
+```
+
+### Step 5: Create Installation Prompt
+
+Create `.claude/prompts/install.md`:
+
+```markdown
+# MoAI-ADK Installation Prompt
+
+When user requests MoAI-ADK installation:
+
+## Step 1: System Analysis
+
+Check:
+- Python version (3.11+ required)
+- Disk space (500MB+ recommended)
+- Network connectivity
+- Existing installation
+- Locale settings (Korean detection)
+
+## Step 2: Korean Auto-Detection
+
+If locale contains 'ko_' or 'KR':
+- Automatically suggest Korean support
+- Offer to install Nanum fonts
+- Configure Korean NLP features
+
+If user's message contains Korean characters:
+- Respond bilingually
+- Auto-enable Korean features
+
+## Step 3: Installation
+
+Use UV CLI installer located at:
+`../2_uv_cli/installer.py`
+
+Execute:
+```bash
+uv run installer.py install [--korean]
+```
+
+## Step 4: Verification
+
+After installation:
+- Import moai_adk
+- Check version
+- Verify Korean fonts (if installed)
+- Test Korean NLP (if configured)
+
+## Step 5: Next Steps
+
+Guide user to:
+- Activate environment (`source ~/.moai/activate.sh`)
+- Create first agent
+- Explore Korean features (if applicable)
+```
+
+### Step 6: Create Verification Prompt
+
+Create `.claude/prompts/verify.md`:
+
+```markdown
+# MoAI-ADK Verification Prompt
+
+When user requests verification:
+
+## Checks
+
+1. Configuration directory exists: `~/.moai`
+2. MoAI-ADK is importable: `import moai_adk`
+3. Version is correct: `moai_adk.__version__`
+4. UV is available: `which uv`
+5. Korean support (if installed):
+   - Fonts present: `fc-list | grep -i nanum`
+   - Config exists: `~/.moai/config/settings.json`
+   - Korean NLP enabled
+
+## Report Format
+
+Present results in a table:
+
+| Component | Status | Details |
+|-----------|--------|---------|
+| Config Dir | ✓/✗ | ~/.moai |
+| MoAI-ADK | ✓/✗ | v1.0.0 |
+| UV | ✓/✗ | installed |
+| Korean Support | ✓/✗ | configured |
+
+## Troubleshooting
+
+If any check fails, provide specific fix.
+```
+
+### Step 7: Create Korean Setup Prompt
+
+Create `.claude/prompts/korean-setup.md`:
+
+```markdown
+# Korean Language Setup Prompt
+
+When user requests Korean language support:
+
+## Detection
+
+Check if Korean locale:
+```bash
+echo $LANG | grep -i ko
+```
+
+## Font Installation
+
+### macOS
+```bash
+brew install --cask font-nanum
+brew install --cask font-nanum-gothic-coding
+```
+
+### Linux (Ubuntu/Debian)
+```bash
+sudo apt-get install fonts-nanum fonts-nanum-coding
+```
+
+### Linux (Fedora/RHEL)
+```bash
+sudo yum install google-noto-sans-cjk-ttc-fonts
+```
+
+## Configuration
+
+Create/update `~/.moai/config/settings.json`:
+
+```json
+{
+  "language": "ko_KR",
+  "locale": "ko_KR.UTF-8",
+  "ui": {
+    "font_family": "Nanum Gothic"
+  },
+  "features": {
+    "korean_nlp": true,
+    "korean_tokenizer": true
+  }
+}
+```
+
+## Verification
+
+Test Korean text processing:
+```python
+import moai_adk
+text = "안녕하세요, MoAI-ADK입니다."
+result = moai_adk.process_korean_text(text)
+print(result)
+```
+```
+
+### Step 8: Create Troubleshooting Prompt
+
+Create `.claude/prompts/troubleshoot.md`:
+
+```markdown
+# MoAI-ADK Troubleshooting Prompt
+
+Common issues and solutions:
+
+## Import Error
+
+Error: `ModuleNotFoundError: No module named 'moai_adk'`
+
+Solution:
+1. Verify installation: `uv pip list | grep moai-adk`
+2. Reinstall: `uv pip install --force-reinstall moai-adk`
+3. Check Python version: `python3 --version`
+
+## UV Not Found
+
+Error: `UV is not installed or not in PATH`
+
+Solution:
+1. Install UV: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+2. Add to PATH: `export PATH="$HOME/.cargo/bin:$PATH"`
+3. Reload shell: `source ~/.zshrc`
+
+## Korean Fonts Not Displaying
+
+Issue: Korean characters show as boxes
+
+Solution:
+1. Check fonts: `fc-list | grep -i nanum`
+2. Reinstall fonts: `brew reinstall --cask font-nanum`
+3. Restart terminal
+4. Rebuild font cache: `fc-cache -fv`
+
+## Configuration Error
+
+Error: Configuration file invalid
+
+Solution:
+1. Validate JSON: `python3 -m json.tool ~/.moai/config/settings.json`
+2. Backup: `cp ~/.moai/config/settings.json ~/.moai/config/settings.json.bak`
+3. Recreate: Ask Claude to recreate configuration
+```
+
+## Symlink Installation
+
+Once `.claude/` directory is created:
+
+### Option 1: Global Installation
+
+```bash
+ln -s "$(pwd)/.claude" ~/.claude/skills/moai-installer
+```
+
+### Option 2: Project Installation
+
+```bash
+cd /path/to/your/project
+mkdir -p .claude/skills
+ln -s /path/to/3_claude_skill/.claude .claude/skills/moai-installer
+```
+
+## Verification
+
+```bash
+# Check symlink
+ls -la ~/.claude/skills/moai-installer
+
+# Should show symlink pointing to .claude directory
+```
+
+## Usage
+
+After symlinking, trigger the skill:
+
+```
+User: "install moai-adk"
+```
+
+Claude will:
+1. Load skill context
+2. Analyze system
+3. Detect Korean locale
+4. Execute installation
+5. Verify and provide next steps
+
+## Notes
+
+- This is a conceptual structure for Claude Skills
+- Actual Claude Code skill system may have different requirements
+- Adapt structure based on Claude Code's skill specification
+- Refer to Claude Code documentation for official skill format
+
+## Support
+
+For questions about Claude Skills:
+- Check Claude Code documentation
+- Review existing skills in `~/.claude/skills/`
+- Ask Claude for help with skill development

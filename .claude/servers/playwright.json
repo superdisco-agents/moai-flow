@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "name": "Playwright MCP Server",
+    "description": "Browser automation and E2E testing for MoAI agents",
+    "status": "required",
+    "version": "latest"
+  },
+  "server": {
+    "command": "npx",
+    "args": ["-y", "@playwright/mcp@latest"]
+  },
+  "tools": [
+    "mcp__playwright__browser_navigate",
+    "mcp__playwright__browser_snapshot",
+    "mcp__playwright__browser_click",
+    "mcp__playwright__browser_type",
+    "mcp__playwright__browser_fill_form",
+    "mcp__playwright__browser_take_screenshot",
+    "mcp__playwright__browser_evaluate",
+    "mcp__playwright__browser_press_key",
+    "mcp__playwright__browser_select_option",
+    "mcp__playwright__browser_hover",
+    "mcp__playwright__browser_drag",
+    "mcp__playwright__browser_wait_for",
+    "mcp__playwright__browser_tabs",
+    "mcp__playwright__browser_close",
+    "mcp__playwright__browser_resize",
+    "mcp__playwright__browser_console_messages",
+    "mcp__playwright__browser_network_requests",
+    "mcp__playwright__browser_handle_dialog",
+    "mcp__playwright__browser_file_upload",
+    "mcp__playwright__browser_navigate_back",
+    "mcp__playwright__browser_run_code",
+    "mcp__playwright__browser_install"
+  ],
+  "usedBy": [
+    "mcp-playwright",
+    "mcp-playwright-integrator",
+    "accessibility-expert",
+    "expert-uiux",
+    "ui-ux-expert",
+    "expert-frontend",
+    "frontend-expert"
+  ],
+  "features": {
+    "browser_automation": true,
+    "e2e_testing": true,
+    "screenshot_capture": true,
+    "form_filling": true,
+    "accessibility_testing": true
+  },
+  "environment": {},
+  "notes": "No environment variables required. May need to run 'npx playwright install' to install browser binaries."
+}

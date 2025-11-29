@@ -1,0 +1,235 @@
+# MoAI-ADK Installation Framework - Python Project .gitignore
+
+# Python Runtime
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv
+.env
+
+# Package Management
+*.egg-info/
+dist/
+build/
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
+.eggs/
+requirements*.txt.lock
+
+# IDE & Editor Configuration
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+.vim/
+.atom/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+.nox/
+coverage.xml
+*.cover
+
+# Type Checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Documentation Build Artifacts
+docs/_build/
+site/
+
+# Environment Files
+.env.local
+.env.*.local
+.env.production
+config.local.py
+
+# OS-Specific
+Thumbs.db
+ehthumbs.db
+*.lnk
+.AppleDouble
+.LSOverride
+._*
+
+# Temporary Files
+*.tmp
+*.bak
+*.backup
+*.swp
+*.swo
+*.orig
+*~
+.#*
+
+# Log Files
+*.log
+logs/
+*.log.*
+
+# Build Artifacts
+*.o
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Compiled Files
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution
+.eggs
+.installed.cfg
+
+# virtualenv
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Poetry
+poetry.lock
+.venv/
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath
+.sage.py
+
+# Sphinx
+docs/_build/
+
+# pyenv
+.python-version
+
+# Rope
+.ropeproject/
+
+# mkdocs
+/site
+
+# Pyre
+.pyre/
+
+# Local development
+.vscode/settings.json
+.vscode/launch.json
+
+# MacOS
+.DS_Store
+*.swp
+*.swo
+
+# Windows
+desktop.ini
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Project Specific
+.moai/
+*.moai
+moai_cache/
+
+# Installer Temporary Files
+install_tmp/
+temp_install/
+.install_tmp/
+
+# Korean Font Cache
+.font_cache/
+*.font_cache
+
+# Test Artifacts
+test_results/
+test_output/
+test_logs/
+
+# Performance Profiling
+profile_data/
+*.prof
+
+# Memory Profiling
+.memprof
+
+# Benchmark Results
+benchmark_results/
+*.benchmark
+
+# Protected Files (DO NOT IGNORE)
+!.claude/
+!.claude-flow/
+!apps/
+!docs/
+!ai_docs/
+!*.py
+!*.sh
+!*.md
+!*.json
+!.gitignore
+!REFACTORING-COMPLETE.md
+!FINAL-STATUS.md
+!CLEAN-DIRECTORY-SUMMARY.md
+
+# Explicitly Include Source Files
+!*.py
+!*.sh
+!README.md
+!SUMMARY.md
+!SKILL.md
+!ARCHITECTURE.md
+!COMPARISON.md
+!KOREAN-SETUP.md
+!SETUP.md
+!COMPLETION.md
+!settings.json
+!

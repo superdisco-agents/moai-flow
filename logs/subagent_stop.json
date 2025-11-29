@@ -1,0 +1,290 @@
+[
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "plan",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "plan",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "plan",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "plan",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "plan",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "plan",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "plan",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "file:///Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk/_config/MOAI-ADK/analysis use this analysis folder using Alfred\n\ncreate and fully reverse engineer MOAI \n\ncreate 1 file each different ways of wrapping claude code methods\n\nlike: \n\nAGENTS\nSKILLS\nCOMMANDS\nSCRIPTS\nMCP SERVERS\n\nthese are different ways of wrapping\n/Users/rdmtv/Downloads/claude-flow-mcp-strategy-analysis-ko\\ \\(1\\).md this is an example from another project \n\ncreate and reverse pattern analyze MOAI 1 folder each in korean \nuse tables and ansi diagrams and always use and plan with Alfred"
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "plan",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "file:///Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk/_config/MOAI-ADK/analysis create a full Korean Version so our kroean developer will know what to do "
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "plan",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "good but instead of docs is there making claude code to behave and interact in korean is what i wanted more file:///Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk/moai-adk is there something like that in moai that we missed? claude code configuration is what i'm looking for with improved kroean font for ghostty is what i want \n\n# Ghostty Performance Optimization Config\n# Based on: https://ghostty.org/docs/config\n# Generated: 2025-11-07\n\n# === Performance Settings ===\n\n# GPU Acceleration (Metal on macOS)\n# Ghostty uses Metal for optimal macOS performance\n\n# Rendering Performance\n# Maintain smooth scrolling and reduce latency\n# Disable cursor blinking to reduce redraws\ncursor-style-blink = false\n\n# Memory Management\n# Limit scrollback to reduce memory usage\n# Default is unlimited, 10k is reasonable\nscrollback-limit = 10000\n\n# Visual Effects vs Performance\n# Disable heavy visual effects\n# Enable window decorations for tabs support\nwindow-decoration = auto\n\n# Disable opacity changes\nunfocused-split-opacity = 1.0\n\n# Mouse Performance\n# Reduce mouse rendering overhead\nmouse-hide-while-typing = true\n\n# === Clipboard Performance ===\nclipboard-read = allow\nclipboard-write = allow\n\n# Reduce clipboard overhead\nclipboard-paste-protection = false\n\n# === Font Rendering ===\n# Use system fonts for better performance\n# Korean font configuration for MoAI-ADK\nfont-family = \"JetBrains Mono\"\nfont-family = \"D2Coding\"\nfont-family = \"SF Mono\"\nfont-size = 14\nfont-feature = \"calt\"\nfont-feature = \"liga\"\n\n# === Window Management ===\n# Window state persistence (default/never/always)\nwindow-save-state = default\nwindow-theme = system\n\n# Initial window size for proper TUI rendering\n# Claude Code TUI works best with at least 120 columns\nwindow-width = 160\nwindow-height = 50\n\n# === Shell Integration ===\n# Enable shell integration for better responsiveness and text handling\n# Shell integration allows complex prompts to resize correctly\nshell-integration = detect\nshell-integration-features = cursor,title\n\n# === Terminal Compatibility Fix ===\n# Fix for Claude Code and Node.js applications hanging\n# Ghostty's default TERM=xterm-ghostty isn't recognized by Node.js readline\n# This causes applications to hang after displaying headers\n# Uncomment the line below if Claude Code or other Node.js apps hang:\nterm = xterm-256color\n\n# === I/O Performance ===\n# Ghostty has dedicated I/O thread, these optimize it\n# Reduce confirmation overhead\nconfirm-close-surface = false\n\n# === macOS Specific ===\n# Use native fullscreen for better performance\nmacos-non-native-fullscreen = false\n\n# Reduce custom titlebar overhead\nmacos-titlebar-style = native\n\n# === Color Theme: Winter is Coming (Dark Blue) ===\n# Based on: https://github.com/johnpapa/vscode-winteriscoming\n\n# Background and Foreground\nbackground = #011627\nforeground = #d6deeb\n\n# Cursor\ncursor-color = #219fd5\n\n# Selection\nselection-background = #103362\nselection-foreground = #d6deeb\n\n# ANSI Colors (Normal)\npalette = 0=#011627\npalette = 1=#ef5350\npalette = 2=#5ABEB0\npalette = 3=#f7ecb5\npalette = 4=#219fd5\npalette = 5=#C792EA\npalette = 6=#80CBC4\npalette = 7=#d6deeb\n\n# ANSI Colors (Bright)\npalette = 8=#5f7e97\npalette = 9=#ef5350\npalette = 10=#5ABEB0\npalette = 11=#ffca28\npalette = 12=#6dbdfa\npalette = 13=#d29ffc\npalette = 14=#7fdbca\npalette = 15=#ffffff\n\n\nupdate ghostty config for korean font \n\nthen review moai for claude settings and config if there are any"
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "plan",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "file:///Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk/_config/MOAI-ADK/docs/INSTALL-MOAI-KO move all of what you worked on into this folder for your past work and remaining work "
+  },
+  {
+    "session_id": "f6fc8c95-f7ee-4865-9134-86cbbd45847a",
+    "transcript_path": "/Users/rdmtv/.claude/projects/-Users-rdmtv/f6fc8c95-f7ee-4865-9134-86cbbd45847a.jsonl",
+    "cwd": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "always use 5x parallel agetns at all times for all tasks"
+  }
+]

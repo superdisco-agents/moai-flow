@@ -1,0 +1,40 @@
+{
+  "_meta": {
+    "name": "GitHub MCP Server",
+    "description": "GitHub PR/Issue management for MoAI agents",
+    "status": "optional",
+    "version": "latest"
+  },
+  "server": {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-github"]
+  },
+  "tools": [
+    "mcp__github__create-or-update-file",
+    "mcp__github__push-files"
+  ],
+  "usedBy": [
+    "devops-expert",
+    "expert-devops"
+  ],
+  "features": {
+    "pr_management": true,
+    "issue_management": true,
+    "file_operations": true,
+    "repository_access": true
+  },
+  "environment": {
+    "GITHUB_PERSONAL_ACCESS_TOKEN": {
+      "source": "${GITHUB_PAT_TOKEN}",
+      "description": "GitHub Personal Access Token",
+      "required": true,
+      "location": "/Users/rdmtv/Documents/claydev-local/Config/_config/github.env"
+    }
+  },
+  "permissions": [
+    "repo (Full control of private repositories)",
+    "workflow (Update GitHub Action workflows)",
+    "read:org (Read org membership)"
+  ],
+  "notes": "Requires GITHUB_PAT_TOKEN environment variable. Token stored at: /Users/rdmtv/Documents/claydev-local/Config/_config/github.env"
+}

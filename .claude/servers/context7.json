@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "name": "Context7 MCP Server",
+    "description": "Real-time documentation retrieval for 40+ MoAI agents",
+    "status": "required",
+    "version": "latest"
+  },
+  "server": {
+    "command": "npx",
+    "args": ["-y", "@upstash/context7-mcp@latest"]
+  },
+  "tools": [
+    "mcp__context7__resolve-library-id",
+    "mcp__context7__get-library-docs"
+  ],
+  "usedBy": [
+    "All expert-* agents",
+    "All manager-* agents",
+    "All mcp-* agents",
+    "mcp-context7-integrator"
+  ],
+  "features": {
+    "documentation_research": true,
+    "api_references": true,
+    "version_checking": true,
+    "code_examples": true
+  },
+  "environment": {},
+  "notes": "No environment variables required. Auto-included in .mcp.json. Essential for hallucination-free code generation."
+}

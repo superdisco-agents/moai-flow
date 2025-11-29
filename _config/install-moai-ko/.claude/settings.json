@@ -1,0 +1,135 @@
+{
+  "commands": [
+    {
+      "name": "prime",
+      "path": "commands/prime.md",
+      "description": "Load MoAI-ADK installation context and system overview",
+      "tags": ["moai", "context", "primer"]
+    },
+    {
+      "name": "install",
+      "path": "commands/install.md",
+      "description": "Execute standard MoAI-ADK installation workflow",
+      "tags": ["moai", "install", "automation"]
+    },
+    {
+      "name": "install-korean",
+      "path": "commands/install-korean.md",
+      "description": "Execute MoAI-ADK installation with Korean language support",
+      "tags": ["moai", "install", "korean", "i18n"]
+    },
+    {
+      "name": "verify",
+      "path": "commands/verify.md",
+      "description": "Validate MoAI-ADK installation completeness and correctness",
+      "tags": ["moai", "verify", "validation", "qa"]
+    }
+  ],
+  "agents": [
+    {
+      "name": "installer",
+      "path": "agents/installer.md",
+      "model": "claude-sonnet-4-5-20250929",
+      "description": "MoAI-ADK installation orchestration agent with Korean support",
+      "tags": ["moai", "installer", "automation", "korean"],
+      "capabilities": [
+        "installation-orchestration",
+        "dependency-management",
+        "environment-configuration",
+        "korean-localization",
+        "error-recovery"
+      ]
+    },
+    {
+      "name": "validator",
+      "path": "agents/validator.md",
+      "model": "claude-haiku-4-5-20250513",
+      "description": "MoAI-ADK installation validation and quality assurance agent",
+      "tags": ["moai", "validator", "qa", "testing"],
+      "capabilities": [
+        "installation-validation",
+        "agent-verification",
+        "korean-support-testing",
+        "portability-testing",
+        "report-generation"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "name": "moai-adk-installer",
+      "description": "Complete MoAI-ADK installation workflow with Korean support",
+      "commands": ["prime", "install", "install-korean", "verify"],
+      "agents": ["installer", "validator"]
+    }
+  ],
+  "configuration": {
+    "project_name": "MoAI-ADK",
+    "project_path": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk/_config/install-moai-ko",
+    "python_version_required": "3.13+",
+    "package_manager": "uv",
+    "total_agents": 26,
+    "agent_categories": [
+      "Core Coordinators (5)",
+      "Consensus Agents (6)",
+      "Performance Agents (4)",
+      "Development Agents (5)",
+      "Specialized Agents (6)"
+    ],
+    "korean_support": {
+      "enabled": true,
+      "fonts": ["D2Coding", "Noto Sans KR"],
+      "terminal": "Ghostty",
+      "locale": "ko_KR.UTF-8"
+    },
+    "progressive_disclosure": {
+      "pattern": "beyond-MCP",
+      "levels": 5,
+      "style": "graduated-complexity"
+    }
+  },
+  "workflows": [
+    {
+      "name": "standard-installation",
+      "description": "Standard MoAI-ADK installation without Korean support",
+      "steps": [
+        "/prime",
+        "/install",
+        "/verify"
+      ],
+      "estimated_duration": "10 minutes"
+    },
+    {
+      "name": "korean-installation",
+      "description": "MoAI-ADK installation with full Korean support",
+      "steps": [
+        "/prime",
+        "/install-korean",
+        "/verify --korean-fonts true"
+      ],
+      "estimated_duration": "15 minutes"
+    },
+    {
+      "name": "validation-only",
+      "description": "Validate existing MoAI-ADK installation",
+      "steps": [
+        "/verify"
+      ],
+      "estimated_duration": "5 minutes"
+    }
+  ],
+  "hooks": {
+    "pre_install": "npx claude-flow@alpha hooks pre-task --description 'MoAI-ADK installation'",
+    "post_install": "npx claude-flow@alpha hooks post-task --task-id 'moai-adk-install'",
+    "pre_validate": "npx claude-flow@alpha hooks pre-task --description 'MoAI-ADK validation'",
+    "post_validate": "npx claude-flow@alpha hooks post-task --task-id 'moai-adk-verify'"
+  },
+  "documentation": {
+    "overview": "COMMANDS_AND_AGENTS.md",
+    "installation": "commands/install.md",
+    "korean_setup": "commands/install-korean.md",
+    "validation": "commands/verify.md"
+  },
+  "version": "1.0.0",
+  "last_updated": "2025-11-29"
+}

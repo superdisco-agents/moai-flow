@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "language": {
+    "conversation_language": "ko",
+    "conversation_language_name": "Korean",
+    "agent_prompt_language": "ko",
+    "enforce_language_only": true,
+    "fallback_language": "ko",
+    "disable_english_fallback": true
+  },
+  "messages": {
+    "cli_output": "ko",
+    "error_messages": "ko",
+    "help_text": "ko",
+    "log_messages": "ko"
+  },
+  "ui": {
+    "language": "ko",
+    "locale": "ko_KR",
+    "timezone": "Asia/Seoul"
+  },
+  "notes": "한국어 전용 설정 - This configuration enforces Korean-only mode for all user-facing content"
+}

@@ -1,0 +1,45 @@
+{
+  "_meta": {
+    "name": "Notion MCP Server",
+    "description": "Notion workspace management for MoAI agents",
+    "status": "optional",
+    "version": "latest"
+  },
+  "server": {
+    "command": "npx",
+    "args": ["-y", "@notionhq/notion-mcp-server"]
+  },
+  "tools": [
+    "Database operations",
+    "Page creation and management",
+    "Content automation",
+    "Workspace queries"
+  ],
+  "usedBy": [
+    "mcp-notion",
+    "mcp-notion-integrator"
+  ],
+  "features": {
+    "database_operations": true,
+    "page_management": true,
+    "content_automation": true,
+    "workspace_management": true
+  },
+  "environment": {
+    "NOTION_API_KEY": {
+      "source": "${NOTION_API_KEY}",
+      "description": "Notion API Integration Token",
+      "required": true,
+      "setup_url": "https://www.notion.so/my-integrations"
+    }
+  },
+  "setup_instructions": [
+    "1. Go to https://www.notion.so/my-integrations",
+    "2. Click 'New integration'",
+    "3. Name your integration (e.g., 'MoAI-ADK')",
+    "4. Select the workspace to connect",
+    "5. Copy the 'Internal Integration Token' (starts with 'secret_')",
+    "6. Set NOTION_API_KEY environment variable"
+  ],
+  "notes": "Requires NOTION_API_KEY environment variable. Create integration at https://www.notion.so/my-integrations"
+}
