@@ -30,19 +30,32 @@ Example:
     ConsensusDecision.APPROVED
 """
 
-from typing import Dict, List, Any, Set
+from typing import TYPE_CHECKING, Dict, List, Any, Set
 from dataclasses import dataclass, field
 from datetime import datetime
 import logging
 import time
 
-from ..consensus_manager import (
-    ConsensusAlgorithm,
-    ConsensusResult,
-    ConsensusDecision,
-    Vote,
-    VoteType
-)
+# Fix circular import: Use direct module path instead of package-level import
+# This avoids importing from moai_flow.coordination.__init__ which imports algorithms
+if TYPE_CHECKING:
+    from moai_flow.coordination.consensus_manager import (
+        ConsensusAlgorithm,
+        ConsensusResult,
+        ConsensusDecision,
+        Vote,
+        VoteType,
+    )
+else:
+    # At runtime, import directly from consensus_manager module
+    # This bypasses the coordination.__init__ which causes the circular import
+    from moai_flow.coordination.consensus_manager import (
+        ConsensusAlgorithm,
+        ConsensusResult,
+        ConsensusDecision,
+        Vote,
+        VoteType,
+    )
 
 logger = logging.getLogger(__name__)
 

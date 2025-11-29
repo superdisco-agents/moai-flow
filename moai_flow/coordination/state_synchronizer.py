@@ -36,11 +36,16 @@ Version: 1.0.0
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 from dataclasses import asdict
 
-from ..core.interfaces import ICoordinator, IMemoryProvider
-from .conflict_resolver import ConflictResolver, StateVersion
+# Fix circular import: Only import for type checking, not at runtime
+# core.__init__ imports SwarmCoordinator which imports from coordination
+# Use duck typing at runtime (Python doesn't enforce interfaces anyway)
+if TYPE_CHECKING:
+    from moai_flow.core.interfaces import ICoordinator, IMemoryProvider
+
+from moai_flow.coordination.conflict_resolver import ConflictResolver, StateVersion
 
 logger = logging.getLogger(__name__)
 
@@ -73,8 +78,8 @@ class StateSynchronizer:
 
     def __init__(
         self,
-        coordinator: ICoordinator,
-        memory: IMemoryProvider,
+        coordinator: "ICoordinator",  # String annotation to avoid circular import
+        memory: "IMemoryProvider",  # String annotation to avoid circular import
         conflict_resolver: ConflictResolver,
         default_timeout_ms: int = 10000
     ):

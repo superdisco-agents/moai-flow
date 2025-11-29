@@ -38,11 +38,16 @@ References:
 import random
 import logging
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from collections import Counter
 
-from .base import ConsensusAlgorithm, ConsensusResult
+# Fix circular import: Use direct module path instead of relative import
+# This avoids importing from coordination.__init__ which imports algorithms
+if TYPE_CHECKING:
+    from moai_flow.coordination.algorithms.base import ConsensusAlgorithm, ConsensusResult
+else:
+    from moai_flow.coordination.algorithms.base import ConsensusAlgorithm, ConsensusResult
 
 logger = logging.getLogger(__name__)
 

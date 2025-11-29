@@ -21,6 +21,10 @@ from .consensus_manager import (
     VoteType,
 )
 
+# PRD-07: Advanced consensus algorithms
+from .algorithms.gossip import GossipProtocol
+from .algorithms.byzantine import ByzantineConsensus
+
 # Phase 6B: Conflict Resolution & State Synchronization
 from .conflict_resolver import (
     ConflictResolver,
@@ -44,6 +48,8 @@ __all__ = [
     "WeightedAlgorithm",
     "Vote",
     "VoteType",
+    "GossipProtocol",
+    "ByzantineConsensus",
     # Phase 6B: Conflict Resolution & State Sync
     "ConflictResolver",
     "StateVersion",

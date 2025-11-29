@@ -15,10 +15,17 @@ import logging
 import time
 from datetime import datetime
 from threading import Lock
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from .base import ConsensusAlgorithm, ConsensusResult, RaftState
-from moai_flow.core.interfaces import ICoordinator
+# Fix circular import: Use absolute path to base module
+from moai_flow.coordination.algorithms.base import ConsensusAlgorithm, ConsensusResult, RaftState
+
+# Fix circular import: Don't import ICoordinator from core package
+# core.__init__.py imports SwarmCoordinator which imports from coordination
+# Instead, we'll use duck typing or late binding
+if TYPE_CHECKING:
+    # Only for type checking, not at runtime
+    from moai_flow.core.interfaces import ICoordinator
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +50,7 @@ class RaftConsensus(ConsensusAlgorithm):
 
     def __init__(
         self,
-        coordinator: ICoordinator,
+        coordinator: "ICoordinator",  # String annotation to avoid circular import
         election_timeout_ms: int = 5000,
         heartbeat_interval_ms: int = 1000
     ):
