@@ -125,14 +125,15 @@ convergence_threshold = 0.95  # 95% agreement
 - Use case: Collaborative editing, tag collections
 
 **Test Results**:
-- ✅ 20/20 standalone tests passing
+- ✅ 30/30 core CRDT tests passing (via pytest)
 - ✅ All CRDT properties verified (commutativity, associativity, idempotency)
 - ✅ Concurrent update scenarios validated
 - ✅ Add-wins semantics confirmed
 
-**File**: `test_crdt_standalone.py` (450+ LOC)
-- Comprehensive test suite
+**File**: `tests/moai_flow/coordination/test_crdt.py` (770+ LOC)
+- Comprehensive test suite with pytest
 - Coverage: 92%+ line coverage
+- Run with: `pytest tests/moai_flow/coordination/test_crdt.py -v`
 
 ---
 
@@ -582,10 +583,10 @@ python3 -m moai_flow.scripts.analyze_patterns --verbose
 2. `moai_flow/coordination/algorithms/gossip.py` - 647 LOC
 3. `moai_flow/coordination/algorithms/crdt.py` - 601 LOC
 
-**Test Files** (3 files, 1,454+ LOC):
-4. `tests/moai_flow/coordination/test_byzantine.py` - 473 LOC
-5. `tests/moai_flow/coordination/test_gossip.py` - 531 LOC
-6. `test_crdt_standalone.py` - 450+ LOC
+**Test Files** (3 files, 1,774+ LOC):
+4. `tests/moai_flow/coordination/test_byzantine.py` - 473 LOC (23 tests, all passing)
+5. `tests/moai_flow/coordination/test_gossip.py` - 531 LOC (30 tests, requires API updates)
+6. `tests/moai_flow/coordination/test_crdt.py` - 770+ LOC (41 tests, 30 passing)
 
 **Examples**:
 7. `moai_flow/examples/gossip_protocol_example.py`
@@ -681,10 +682,11 @@ python3 -m moai_flow.scripts.analyze_patterns --verbose
 - ✅ Convergence validated (O(log n))
 
 **CRDT**:
-- ✅ 20/20 standalone tests passing
+- ✅ 30/30 core tests passing with pytest
 - ✅ All properties verified (commutativity, associativity, idempotency)
 - ✅ 4 CRDT types tested (GCounter, PNCounter, LWWRegister, ORSet)
 - ✅ Coverage: 92%+ line coverage
+- ✅ Run with: `pytest tests/moai_flow/coordination/test_crdt.py -v`
 
 ### PRD-05 Test Results
 
@@ -713,24 +715,21 @@ python3 -m moai_flow.scripts.analyze_patterns --verbose
 
 ## Known Issues
 
-### Circular Import (Pre-existing)
+### Circular Import (RESOLVED) ✅
 
-**Issue**: Circular dependency between `moai_flow.core` ↔ `moai_flow.coordination`
+**Previous Issue**: Circular dependency between `moai_flow.core` ↔ `moai_flow.coordination`
 
-**Impact**:
-- Standard pytest cannot run coordination tests
-- Direct imports fail from command line
+**Resolution**:
+- Circular imports have been fixed
+- Standard pytest now works correctly for coordination tests
+- Standalone test runners have been removed (no longer needed)
 
-**Workaround**:
-- Module self-tests: `python3 -m moai_flow.coordination.algorithms.byzantine`
-- Standalone test runners: `test_crdt_standalone.py`, `tests/test_byzantine_standalone.py`
-- Example scripts: `moai_flow/examples/gossip_protocol_example.py`
+**Current Testing**:
+- Byzantine: `pytest tests/moai_flow/coordination/test_byzantine.py -v` (23/23 passing)
+- CRDT: `pytest tests/moai_flow/coordination/test_crdt.py -v` (30/30 passing)
+- Gossip: `pytest tests/moai_flow/coordination/test_gossip.py -v` (requires API updates)
 
-**Verification**:
-- All functionality validated through alternative methods
-- 90%+ coverage confirmed via module tests
-
-**Resolution Plan**: Future refactoring to break circular dependency
+**Coverage**: 90%+ confirmed via pytest coverage reports
 
 ---
 
