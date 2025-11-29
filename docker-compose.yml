@@ -1,0 +1,142 @@
+version: '3.9'
+
+# MoAI-Flow Docker Compose Configuration
+# Complete stack for local development and testing
+
+services:
+  # Main MoAI-Flow application
+  moai-flow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PYTHON_VERSION: '3.13'
+    image: moai-flow:latest
+    container_name: moai-flow
+    restart: unless-stopped
+
+    # Environment configuration
+    environment:
+      - MOAI_ENV=production
+      - MOAI_DB_PATH=/app/.moai/memory/swarm.db
+      - MOAI_LOG_LEVEL=INFO
+      - MOAI_ENABLE_METRICS=true
+      - MOAI_METRICS_PORT=9090
+
+    # Volume mounts for persistence
+    volumes:
+      - ./moai-data:/app/.moai
+      - ./logs:/app/logs
+
+    # Port mapping
+    ports:
+      - "8000:8000"      # Application port
+      - "9090:9090"      # Metrics port
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "from moai_flow.memory import SwarmDB; SwarmDB()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 512M
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Optional: PostgreSQL (for advanced use cases)
+  postgres:
+    image: postgres:16-alpine
+    container_name: moai-postgres
+    restart: unless-stopped
+    profiles: ["postgres"]
+
+    environment:
+      - POSTGRES_DB=moai_flow
+      - POSTGRES_USER=moai
+      - POSTGRES_PASSWORD=moai_secure_password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8 --lc-collate=C --lc-ctype=C
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    ports:
+      - "5432:5432"
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U moai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Optional: Prometheus (metrics collection)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: moai-prometheus
+    restart: unless-stopped
+    profiles: ["monitoring"]
+
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+
+    ports:
+      - "9091:9090"
+
+  # Optional: Grafana (metrics visualization)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: moai-grafana
+    restart: unless-stopped
+    profiles: ["monitoring"]
+
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+
+    volumes:
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+      - grafana-data:/var/lib/grafana
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - prometheus
+
+# Named volumes for data persistence
+volumes:
+  postgres-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+# Network configuration
+networks:
+  default:
+    name: moai-network
+    driver: bridge
