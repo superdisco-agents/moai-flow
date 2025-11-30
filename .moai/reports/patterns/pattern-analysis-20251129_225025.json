@@ -1,0 +1,96 @@
+{
+  "period": "weekly",
+  "date_range": "2025-11-22 to 2025-11-29",
+  "generated_at": "2025-11-29T22:50:25.932230",
+  "summary": {
+    "total_tasks": 140,
+    "success_rate": 0.85,
+    "avg_duration_ms": 43040.0
+  },
+  "by_agent": {
+    "expert-backend": {
+      "tasks": 28,
+      "success_rate": 0.5,
+      "avg_duration_ms": 52500,
+      "median_duration_ms": 52500.0,
+      "total_files_created": 28,
+      "total_tokens_used": 630000
+    },
+    "expert-frontend": {
+      "tasks": 28,
+      "success_rate": 0.75,
+      "avg_duration_ms": 36800,
+      "median_duration_ms": 36800.0,
+      "total_files_created": 56,
+      "total_tokens_used": 658000
+    },
+    "manager-tdd": {
+      "tasks": 28,
+      "success_rate": 1.0,
+      "avg_duration_ms": 29750,
+      "median_duration_ms": 29750.0,
+      "total_files_created": 84,
+      "total_tokens_used": 686000
+    },
+    "expert-database": {
+      "tasks": 28,
+      "success_rate": 1.0,
+      "avg_duration_ms": 42350,
+      "median_duration_ms": 42350.0,
+      "total_files_created": 112,
+      "total_tokens_used": 714000
+    },
+    "expert-devops": {
+      "tasks": 28,
+      "success_rate": 1.0,
+      "avg_duration_ms": 53800,
+      "median_duration_ms": 53800.0,
+      "total_files_created": 140,
+      "total_tokens_used": 742000
+    }
+  },
+  "errors": {
+    "TypeError": 14,
+    "NetworkError": 7
+  },
+  "patterns_observed": [
+    {
+      "pattern": "api_implementation",
+      "occurrences": 28,
+      "avg_duration_ms": 52500,
+      "success_rate": 0.5
+    },
+    {
+      "pattern": "database_migration",
+      "occurrences": 28,
+      "avg_duration_ms": 36800,
+      "success_rate": 0.75
+    },
+    {
+      "pattern": "test_creation",
+      "occurrences": 28,
+      "avg_duration_ms": 29750,
+      "success_rate": 1.0
+    },
+    {
+      "pattern": "frontend_component",
+      "occurrences": 28,
+      "avg_duration_ms": 42350,
+      "success_rate": 1.0
+    },
+    {
+      "pattern": "deployment_script",
+      "occurrences": 28,
+      "avg_duration_ms": 53800,
+      "success_rate": 1.0
+    }
+  ],
+  "recommendations": [
+    "expert-backend has low success rate (50.0%) - review error handling and test coverage",
+    "expert-frontend has low success rate (75.0%) - review error handling and test coverage",
+    "TypeError errors frequent (14 occurrences) - implement specific handling or prevention",
+    "NetworkError errors frequent (7 occurrences) - implement specific handling or prevention",
+    "api_implementation pattern has low success rate (50.0%) - review implementation",
+    "database_migration pattern has low success rate (75.0%) - review implementation"
+  ]
+}

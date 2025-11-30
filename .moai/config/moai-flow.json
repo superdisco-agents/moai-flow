@@ -1,0 +1,86 @@
+{
+  "moai_flow": {
+    "version": "1.0.0",
+    "enabled": true,
+    "swarm": {
+      "default_topology": "adaptive",
+      "default_agent_count": 3,
+      "max_agents": 100,
+      "consensus_algorithm": "raft",
+      "consensus_timeout_ms": 5000
+    },
+    "coordination": {
+      "algorithms": ["byzantine", "gossip", "crdt", "raft", "quorum", "weighted"],
+      "conflict_resolution": "automatic",
+      "state_sync_interval_ms": 1000
+    },
+    "memory": {
+      "semantic_enabled": true,
+      "episodic_enabled": true,
+      "context_hints_enabled": true,
+      "persistence_path": ".moai/memory/moai-flow/swarm-sessions.db",
+      "session_state_path": ".moai/memory/moai-flow/session-state.json"
+    },
+    "optimization": {
+      "bottleneck_detection": true,
+      "self_healing": true,
+      "auto_healing": true,
+      "pattern_learning": true,
+      "predictive_healing": true
+    },
+    "monitoring": {
+      "metrics_enabled": true,
+      "metrics_collection": true,
+      "health_checks_enabled": true,
+      "persistence_enabled": true,
+      "metrics_path": ".moai/memory/moai-flow/latest-metrics.json"
+    },
+    "github": {
+      "pr_agent_enabled": false,
+      "issue_agent_enabled": false,
+      "repo_health_enabled": false
+    },
+    "hooks": {
+      "pre_task": {
+        "enabled": true,
+        "script": "pre_swarm_task.py",
+        "description": "Initialize swarm coordination before task execution"
+      },
+      "post_task": {
+        "enabled": true,
+        "script": "post_swarm_task.py",
+        "description": "Collect metrics and apply self-healing after task execution"
+      },
+      "session_start": {
+        "enabled": true,
+        "script": "swarm_lifecycle.py",
+        "event": "session_start",
+        "description": "Initialize swarm session on startup"
+      },
+      "session_end": {
+        "enabled": true,
+        "script": "swarm_lifecycle.py",
+        "event": "session_end",
+        "description": "Cleanup and persist swarm state on shutdown"
+      }
+    },
+    "topologies": {
+      "adaptive": {
+        "description": "Dynamically adjusts topology based on task requirements",
+        "default": true
+      },
+      "hierarchical": {
+        "description": "Tree-based structure with leader coordination"
+      },
+      "mesh": {
+        "description": "Fully connected peer-to-peer network"
+      },
+      "star": {
+        "description": "Central coordinator with spoke agents"
+      },
+      "ring": {
+        "description": "Circular coordination pattern"
+      }
+    }
+  }
+}

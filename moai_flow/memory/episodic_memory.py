@@ -635,11 +635,13 @@ class EpisodicMemory:
 if __name__ == "__main__":
     from pathlib import Path
     import time
+    import os
 
     print("=== EpisodicMemory Example Usage ===\n")
 
     # Initialize with SwarmDB
-    db_path = Path(".moai/memory/test_episodic.db")
+    # Use environment variable for database path, fallback to production database
+    db_path = Path(os.getenv("MOAI_EPISODIC_DB_PATH", ".moai/memory/swarm.db"))
     db_path.parent.mkdir(parents=True, exist_ok=True)
 
     db = SwarmDB(db_path=db_path)

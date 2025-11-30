@@ -1,0 +1,46 @@
+{
+  "session_id": "81c96467-12bc-428c-9ce2-4a90c257ab4d",
+  "timestamp": "2025-11-30T18:57:08.860034",
+  "active_agents": [],
+  "recent_events": [
+    {
+      "event_id": "861688e3-e67d-4e92-a037-9890bbaf3954",
+      "event_type": "complete",
+      "agent_id": "0ea68e8a-e03b-43cb-904e-b14d489e99ed",
+      "timestamp": "2025-11-29T19:12:37.316444",
+      "metadata": {
+        "result": "success"
+      }
+    },
+    {
+      "event_id": "1df8e83a-1ccd-4109-8e9c-bd7a0f196caf",
+      "event_type": "spawn",
+      "agent_id": "0ea68e8a-e03b-43cb-904e-b14d489e99ed",
+      "timestamp": "2025-11-29T19:12:37.210974",
+      "metadata": {
+        "prompt": "Implement REST API"
+      }
+    },
+    {
+      "event_id": "16a33ae8-9e1f-489a-8313-0f115d3a3f50",
+      "event_type": "complete",
+      "agent_id": "461ba4f0-564c-4e18-9279-ac88383a584c",
+      "timestamp": "2025-11-29T19:11:30.059204",
+      "metadata": {
+        "duration_ms": 100,
+        "result": "success"
+      }
+    },
+    {
+      "event_id": "3346ab61-8407-4f50-99ef-270c4d0120d8",
+      "event_type": "spawn",
+      "agent_id": "461ba4f0-564c-4e18-9279-ac88383a584c",
+      "timestamp": "2025-11-29T19:11:29.953194",
+      "metadata": {
+        "prompt": "Design REST API",
+        "model": "claude-sonnet-4"
+      }
+    }
+  ],
+  "database_path": "/Users/rdmtv/Documents/claydev-local/agent-os-v2/moai-adk/.moai/memory/swarm.db"
+}

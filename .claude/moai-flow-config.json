@@ -1,0 +1,31 @@
+{
+  "moai_flow": {
+    "enabled": true,
+    "version": "1.0.0",
+    "agents": [
+      "coordinator-swarm",
+      "optimizer-bottleneck",
+      "analyzer-consensus",
+      "healer-self"
+    ],
+    "commands": [
+      "swarm-init",
+      "swarm-status",
+      "topology-switch",
+      "consensus-request"
+    ],
+    "skills": [
+      "moai-flow-coordination",
+      "moai-flow-memory",
+      "moai-flow-optimization",
+      "moai-flow-github"
+    ],
+    "directories": {
+      "agents": ".claude/agents/moai-flow",
+      "commands": ".claude/commands/moai-flow",
+      "hooks": ".claude/hooks/moai-flow",
+      "skills": ".claude/skills",
+      "output_styles": ".claude/output-styles/moai-flow"
+    }
+  }
+}

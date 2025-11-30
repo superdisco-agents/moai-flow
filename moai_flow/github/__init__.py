@@ -1,89 +1,104 @@
-"""GitHub automation and integration module.
+"""GitHub automation and integration module (100% isolated).
 
-This module provides GitHub-specific automation agents for:
-- PR creation and management (GitHubPRAgent)
-- Issue triage and management (GitHubIssueAgent, IssueTriage)
-- Repository health monitoring (GitHubRepoAgent)
-- Repository analysis and health metrics (HealthMetricsAnalyzer)
-- Cleanup workflows for repository health (StaleIssueWorkflow, StalePRWorkflow, etc.)
+This module provides GitHub-specific automation agents with ZERO moai_flow dependencies.
+All classes are fully standalone and use only standard library + external packages (PyGithub, requests).
 
 Available classes:
-    - GitHubPRAgent: Automated PR creation and management
-    - GitHubIssueAgent: Automated issue creation and triage
-    - GitHubRepoAgent: Repository health monitoring and stale item management
-    - IssueTriage: Issue classification and priority assignment
-    - IssueMetadata: Issue metadata dataclass
-    - IssuePriority: Priority level enumeration
-    - TriageRule: Custom triage rule definition
-    - HealthMetricsAnalyzer: Repository health metrics analysis
-    - HealthMetrics: Health metrics dataclass
-    - HealthTrend: Health trend enumeration
-    - HealthComparison: Health metrics comparison
-    - StaleIssueWorkflow: Automated stale issue cleanup (30/60/90 days)
-    - StalePRWorkflow: Automated stale PR cleanup (14/30/60 days)
-    - AutoLabelWorkflow: Auto-label PRs based on file changes
-    - NotificationWorkflow: Health degradation notifications
-    - WorkflowConfig: Cleanup workflow configuration
-    - WorkflowResult: Cleanup workflow execution result
-    - StaleItem: Stale issue/PR representation
-    - RepoHealthMetrics: Repository health metrics
-    - HealthCategory: Health category enumeration
-    - Recommendation: Actionable recommendation dataclass
-    - RecommendationPriority: Recommendation priority enumeration
+    PR Management:
+        - GitHubPRAgent: Automated PR creation and management
+        - PRMetadata: PR metadata dataclass
+        - FileChange: File change representation
+
+    Issue Management:
+        - GitHubIssueAgent: Automated issue creation and triage
+        - IssueTriage: Issue classification and priority assignment
+        - IssueMetadata: Issue metadata dataclass
+        - IssuePriority: Priority level enumeration
+        - TriageRule: Custom triage rule definition
+
+    Repository Health:
+        - GitHubRepoAgent: Repository health monitoring and stale item management
+        - HealthMetrics: Repository health metrics (from repo_agent)
+        - HealthCategory: Health category enumeration
+        - StaleItem: Stale issue/PR representation
+        - Recommendation: Actionable recommendation dataclass
+        - RecommendationPriority: Recommendation priority enumeration
+
+    Health Metrics Analysis:
+        - HealthMetricsAnalyzer: Comprehensive health metrics analysis
+        - HealthMetrics: Health metrics snapshot (from health_metrics)
+        - HealthTrend: Health trend enumeration
+        - HealthComparison: Health metrics comparison
+
+Note on HealthMetrics:
+    - repo_agent.HealthMetrics: Basic health metrics for repo_agent
+    - health_metrics.HealthMetrics: Advanced health metrics with trends
+    Both are exported (no aliasing for clarity)
+
+External Dependencies:
+    - PyGithub (github): GitHub API client
+    - requests: HTTP library for GraphQL mutations
+    - Standard library only: os, re, sys, pathlib, typing, datetime, etc.
 """
 
-from moai_flow.github.pr_agent import GitHubPRAgent
-from moai_flow.github.issue_agent import GitHubIssueAgent
-from moai_flow.github.repo_agent import (
-    GitHubRepoAgent,
-    StaleItem,
-    HealthMetrics as RepoHealthMetrics,
-    HealthCategory,
-    Recommendation,
-    RecommendationPriority,
+# PR Agent exports
+from moai_flow.github.pr_agent import (
+    GitHubPRAgent,
+    PRMetadata,
+    FileChange,
 )
+
+# Issue Agent exports
+from moai_flow.github.issue_agent import GitHubIssueAgent
+
+# Triage System exports
 from moai_flow.github.triage import (
     IssueTriage,
     IssueMetadata,
     IssuePriority,
     TriageRule,
 )
+
+# Repository Health Agent exports
+from moai_flow.github.repo_agent import (
+    GitHubRepoAgent,
+    StaleItem,
+    HealthMetrics as RepoHealthMetrics,  # Aliased to avoid confusion with health_metrics.HealthMetrics
+    HealthCategory,
+    Recommendation,
+    RecommendationPriority,
+)
+
+# Health Metrics Analyzer exports
 from moai_flow.github.health_metrics import (
     HealthMetricsAnalyzer,
-    HealthMetrics,
+    HealthMetrics,  # Advanced health metrics with trend analysis
     HealthTrend,
     HealthComparison,
 )
-from moai_flow.github.workflows import (
-    StaleIssueWorkflow,
-    StalePRWorkflow,
-    AutoLabelWorkflow,
-    NotificationWorkflow,
-    WorkflowConfig,
-    WorkflowResult,
-)
 
 __all__ = [
+    # PR Agent
     "GitHubPRAgent",
+    "PRMetadata",
+    "FileChange",
+    # Issue Agent
     "GitHubIssueAgent",
-    "GitHubRepoAgent",
+    # Triage System
     "IssueTriage",
     "IssueMetadata",
     "IssuePriority",
     "TriageRule",
-    "HealthMetricsAnalyzer",
-    "HealthMetrics",
-    "HealthTrend",
-    "HealthComparison",
-    "StaleIssueWorkflow",
-    "StalePRWorkflow",
-    "AutoLabelWorkflow",
-    "NotificationWorkflow",
-    "WorkflowConfig",
-    "WorkflowResult",
+    # Repository Health Agent
+    "GitHubRepoAgent",
     "StaleItem",
-    "RepoHealthMetrics",
+    "RepoHealthMetrics",  # Alias of repo_agent.HealthMetrics
     "HealthCategory",
     "Recommendation",
     "RecommendationPriority",
+    # Health Metrics Analyzer
+    "HealthMetricsAnalyzer",
+    "HealthMetrics",  # health_metrics.HealthMetrics (advanced)
+    "HealthTrend",
+    "HealthComparison",
 ]

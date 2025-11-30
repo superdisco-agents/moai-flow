@@ -537,6 +537,104 @@ class SwarmDB:
         self.logger.info(f"Cleaned up {deleted_count} old events (>{days} days)")
         return deleted_count
 
+    def persist_session_state(self, session_id: Optional[str] = None) -> str:
+        """
+        Persist current session state to .moai/memory/moai-flow/
+
+        Args:
+            session_id: Session ID to persist (defaults to current session)
+
+        Returns:
+            Path to persisted state file
+        """
+        from uuid import uuid4
+
+        state_file = Path(".moai/memory/moai-flow/session-state.json")
+        state_file.parent.mkdir(parents=True, exist_ok=True)
+
+        # Collect current session state
+        conn = self._get_connection()
+        cursor = conn.cursor()
+
+        # Get active agents
+        cursor.execute("""
+            SELECT agent_id, agent_type, status, spawn_time, metadata
+            FROM agent_registry
+            WHERE status IN ('spawned', 'running')
+        """)
+        active_agents = [
+            {
+                "agent_id": row[0],
+                "agent_type": row[1],
+                "status": row[2],
+                "spawn_time": row[3],
+                "metadata": json.loads(row[4]) if row[4] else {}
+            }
+            for row in cursor.fetchall()
+        ]
+
+        # Get recent events (last 100)
+        cursor.execute("""
+            SELECT event_id, event_type, agent_id, timestamp, metadata
+            FROM agent_events
+            ORDER BY timestamp DESC
+            LIMIT 100
+        """)
+        recent_events = [
+            {
+                "event_id": row[0],
+                "event_type": row[1],
+                "agent_id": row[2],
+                "timestamp": row[3],
+                "metadata": json.loads(row[4]) if row[4] else {}
+            }
+            for row in cursor.fetchall()
+        ]
+
+        # Build state object
+        state = {
+            "session_id": session_id or str(uuid4()),
+            "timestamp": datetime.now().isoformat(),
+            "active_agents": active_agents,
+            "recent_events": recent_events,
+            "database_path": str(self.db_path)
+        }
+
+        # Write to file
+        with state_file.open("w") as f:
+            json.dump(state, f, indent=2)
+
+        return str(state_file)
+
+    def cleanup(self, days: int = 30) -> Dict[str, int]:
+        """
+        Cleanup old data and prepare for session end.
+        Alias to cleanup_old_events with additional housekeeping.
+
+        Args:
+            days: Delete events older than this many days
+
+        Returns:
+            Dictionary with cleanup statistics
+        """
+        deleted_events = self.cleanup_old_events(days)
+
+        # Additional cleanup: mark stale agents as error
+        with self.transaction() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE agent_registry
+                SET status = 'error', last_updated = ?
+                WHERE status IN ('spawned', 'running')
+                AND datetime(last_updated) < datetime('now', '-1 hour')
+            """, (datetime.now().isoformat(),))
+            stale_agents = cursor.rowcount
+
+        return {
+            "deleted_events": deleted_events,
+            "cleaned_stale_agents": stale_agents
+        }
+
     def vacuum(self) -> None:
         """Optimize database storage"""
         conn = self._get_connection()

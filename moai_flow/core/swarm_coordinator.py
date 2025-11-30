@@ -133,7 +133,9 @@ class SwarmCoordinator(ICoordinator):
 
         Raises:
             ValueError: If topology_type not supported or consensus_threshold invalid
+            TypeError: If root_agent_id is not a string
         """
+        # Input validation
         if topology_type not in self.SUPPORTED_TOPOLOGIES:
             raise ValueError(
                 f"Unsupported topology: {topology_type}. "
@@ -144,6 +146,17 @@ class SwarmCoordinator(ICoordinator):
             raise ValueError(
                 f"Consensus threshold must be between 0.0 and 1.0, "
                 f"got {consensus_threshold}"
+            )
+
+        if not isinstance(root_agent_id, str) or not root_agent_id.strip():
+            raise TypeError(
+                f"root_agent_id must be non-empty string, got {type(root_agent_id)}"
+            )
+
+        if default_consensus not in ["quorum", "weighted", "raft"]:
+            raise ValueError(
+                f"default_consensus must be 'quorum', 'weighted', or 'raft', "
+                f"got '{default_consensus}'"
             )
 
         self.topology_type = topology_type
@@ -241,7 +254,7 @@ class SwarmCoordinator(ICoordinator):
             # Bottleneck detection (requires monitoring to be enabled)
             if enable_monitoring and self.metrics_collector:
                 self._bottleneck_detector = BottleneckDetector(
-                    metrics_storage=self.metrics_collector._storage,
+                    metrics_storage=self.metrics_collector.storage,  # Fixed: use .storage not ._storage
                     resource_controller=None,  # Set later when resource controller is available
                     detection_window_ms=60000
                 )
@@ -1846,6 +1859,164 @@ class SwarmCoordinator(ICoordinator):
             stats["adaptive"] = {}
 
         return stats
+
+    # ========================================================================
+    # Resource Cleanup and Shutdown
+    # ========================================================================
+
+    def shutdown(self, graceful: bool = True, timeout_seconds: float = 5.0) -> bool:
+        """
+        Gracefully shutdown coordinator and cleanup resources.
+
+        Args:
+            graceful: If True, wait for agents to finish current work
+            timeout_seconds: Maximum time to wait for graceful shutdown
+
+        Returns:
+            True if shutdown completed successfully
+
+        Example:
+            >>> coordinator.shutdown(graceful=True, timeout_seconds=5.0)
+            True
+        """
+        logger.info(
+            f"SwarmCoordinator shutdown initiated (graceful={graceful}, "
+            f"timeout={timeout_seconds}s)"
+        )
+
+        start_time = time.time()
+
+        try:
+            # 1. Stop heartbeat monitoring
+            if self.enable_monitoring and self.heartbeat_monitor:
+                for agent_id in list(self.agent_registry.keys()):
+                    self.heartbeat_monitor.stop_monitoring(agent_id)
+                logger.info("Heartbeat monitoring stopped for all agents")
+
+            # 2. Notify all agents of shutdown
+            if graceful and self.agent_registry:
+                shutdown_message = {
+                    "type": "shutdown",
+                    "graceful": True,
+                    "timestamp": datetime.utcnow().isoformat() + "Z"
+                }
+
+                # Broadcast shutdown notification
+                for agent_id in list(self.agent_registry.keys()):
+                    try:
+                        self.send_message(
+                            "coordinator",
+                            agent_id,
+                            shutdown_message
+                        )
+                    except Exception as e:
+                        logger.warning(f"Failed to notify {agent_id}: {e}")
+
+                # Wait for agents to finish (with timeout)
+                wait_start = time.time()
+                while (time.time() - wait_start) < timeout_seconds:
+                    # Check if any agents are still busy
+                    busy_agents = [
+                        aid for aid, state in self.agent_states.items()
+                        if state == AgentState.BUSY
+                    ]
+                    if not busy_agents:
+                        break
+                    time.sleep(0.1)
+
+                if busy_agents:
+                    logger.warning(
+                        f"Timeout waiting for agents to finish: {busy_agents}"
+                    )
+
+            # 3. Cleanup resources
+            self.agent_registry.clear()
+            self.agent_states.clear()
+            self.agent_heartbeats.clear()
+            self.message_queue.clear()
+            self.synchronized_state.clear()
+
+            # 4. Reset topology
+            self._topology = None
+
+            elapsed = time.time() - start_time
+            logger.info(f"SwarmCoordinator shutdown completed in {elapsed:.2f}s")
+            return True
+
+        except Exception as e:
+            logger.error(f"Error during shutdown: {e}")
+            return False
+
+    def __enter__(self):
+        """Context manager entry."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit with automatic cleanup."""
+        self.shutdown(graceful=True, timeout_seconds=5.0)
+        return False  # Don't suppress exceptions
+
+    def validate_configuration(self) -> Dict[str, Any]:
+        """
+        Validate coordinator configuration and return diagnostics.
+
+        Returns:
+            Validation result with diagnostics
+
+        Example:
+            >>> result = coordinator.validate_configuration()
+            >>> if not result["valid"]:
+            ...     print(result["errors"])
+        """
+        errors = []
+        warnings = []
+
+        # Check topology type
+        if self.topology_type not in self.SUPPORTED_TOPOLOGIES:
+            errors.append(f"Invalid topology type: {self.topology_type}")
+
+        # Check consensus threshold
+        if not 0.0 <= self.consensus_threshold <= 1.0:
+            errors.append(
+                f"Invalid consensus threshold: {self.consensus_threshold} "
+                "(must be 0.0-1.0)"
+            )
+
+        # Check monitoring dependencies
+        if self.enable_monitoring:
+            if not self.metrics_collector:
+                warnings.append("Monitoring enabled but metrics_collector is None")
+            if not self.heartbeat_monitor:
+                warnings.append("Monitoring enabled but heartbeat_monitor is None")
+
+        # Check adaptive optimization dependencies
+        if self._enable_adaptive:
+            if not self._pattern_learner:
+                warnings.append("Adaptive enabled but pattern_learner is None")
+            if self.enable_monitoring and not self._bottleneck_detector:
+                warnings.append("Adaptive enabled but bottleneck_detector is None")
+
+        # Check consensus dependencies
+        if self._enable_consensus and not self._consensus_manager:
+            errors.append("Consensus enabled but consensus_manager is None")
+
+        # Check agent count limits
+        agent_count = len(self.agent_registry)
+        if agent_count > 100:
+            warnings.append(
+                f"Large agent count ({agent_count}) may impact performance"
+            )
+
+        return {
+            "valid": len(errors) == 0,
+            "errors": errors,
+            "warnings": warnings,
+            "topology_type": self.topology_type,
+            "agent_count": agent_count,
+            "monitoring_enabled": self.enable_monitoring,
+            "consensus_enabled": self._enable_consensus,
+            "adaptive_enabled": self._enable_adaptive
+        }
 
 
 __all__ = [

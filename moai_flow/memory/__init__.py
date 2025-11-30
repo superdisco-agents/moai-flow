@@ -9,6 +9,8 @@ Cross-session memory system:
 """
 
 from .swarm_db import SwarmDB
+from .semantic_memory import SemanticMemory
+from .episodic_memory import EpisodicMemory
 from .context_hints import (
     ContextHints,
     PreferenceCategory,
@@ -18,18 +20,14 @@ from .context_hints import (
     ValidationStrictness,
 )
 
-# Future exports (Phase 4)
-# from .semantic_memory import SemanticMemory
-# from .episodic_memory import EpisodicMemory
-
 __all__ = [
     "SwarmDB",
+    "SemanticMemory",
+    "EpisodicMemory",
     "ContextHints",
     "PreferenceCategory",
     "ExpertiseLevel",
     "WorkflowPreference",
     "CommunicationStyle",
     "ValidationStrictness",
-    # Future: "SemanticMemory",
-    # Future: "EpisodicMemory",
 ]

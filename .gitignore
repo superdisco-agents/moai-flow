@@ -61,3 +61,11 @@ Thumbs.db
 .moai/cache/
 .moai/temp/
 .moai/logs/agent-transcripts/*.jsonl
+
+# MoAI-Flow state and cache
+.moai/cache/moai-flow/*
+.moai/memory/moai-flow/*.db
+!.moai/memory/moai-flow/.gitkeep
+
+# Claude Code local settings
+.claude/settings.local.json
