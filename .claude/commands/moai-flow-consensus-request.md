@@ -1,11 +1,17 @@
-# /consensus-request
+---
+name: moai-flow-consensus-request
+description: Request consensus decision from moai-flow swarm agents
+type: prompt
+---
+
+# /moai-flow-consensus-request
 
 Request consensus decision from moai-flow swarm agents.
 
 ## Usage
 
 ```
-/consensus-request "<proposal>" [timeout]
+/moai-flow-consensus-request "<proposal>" [timeout]
 ```
 
 ## Parameters
@@ -16,8 +22,8 @@ Request consensus decision from moai-flow swarm agents.
 ## Examples
 
 ```
-/consensus-request "Approve deployment to production"
-/consensus-request "Select optimization strategy" 10000
+/moai-flow-consensus-request "Approve deployment to production"
+/moai-flow-consensus-request "Select optimization strategy" 10000
 ```
 
 ## Behavior

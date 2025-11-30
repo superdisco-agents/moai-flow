@@ -1,11 +1,17 @@
-# /swarm-status
+---
+name: moai-flow-swarm-status
+description: Display current moai-flow swarm status and performance metrics
+type: prompt
+---
+
+# /moai-flow-swarm-status
 
 Display current moai-flow swarm status and performance metrics.
 
 ## Usage
 
 ```
-/swarm-status
+/moai-flow-swarm-status
 ```
 
 ## Parameters
@@ -15,7 +21,7 @@ None
 ## Examples
 
 ```
-/swarm-status
+/moai-flow-swarm-status
 ```
 
 ## Behavior

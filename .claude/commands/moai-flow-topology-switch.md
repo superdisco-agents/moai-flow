@@ -1,11 +1,17 @@
-# /topology-switch
+---
+name: moai-flow-topology-switch
+description: Switch moai-flow swarm topology dynamically while preserving state
+type: prompt
+---
+
+# /moai-flow-topology-switch
 
 Switch moai-flow swarm topology dynamically while preserving state.
 
 ## Usage
 
 ```
-/topology-switch <new_topology>
+/moai-flow-topology-switch <new_topology>
 ```
 
 ## Parameters
@@ -15,8 +21,8 @@ Switch moai-flow swarm topology dynamically while preserving state.
 ## Examples
 
 ```
-/topology-switch mesh
-/topology-switch adaptive
+/moai-flow-topology-switch mesh
+/moai-flow-topology-switch adaptive
 ```
 
 ## Behavior

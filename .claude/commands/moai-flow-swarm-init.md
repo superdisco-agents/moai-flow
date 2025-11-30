@@ -1,11 +1,17 @@
-# /swarm-init
+---
+name: moai-flow-swarm-init
+description: Initialize moai-flow swarm session with specified topology
+type: prompt
+---
+
+# /moai-flow-swarm-init
 
 Initialize a new moai-flow swarm session with specified topology and configuration.
 
 ## Usage
 
 ```
-/swarm-init [topology] [agent_count]
+/moai-flow-swarm-init [topology] [agent_count]
 ```
 
 ## Parameters
@@ -16,9 +22,9 @@ Initialize a new moai-flow swarm session with specified topology and configurati
 ## Examples
 
 ```
-/swarm-init
-/swarm-init mesh 5
-/swarm-init hierarchical
+/moai-flow-swarm-init
+/moai-flow-swarm-init mesh 5
+/moai-flow-swarm-init hierarchical
 ```
 
 ## Behavior

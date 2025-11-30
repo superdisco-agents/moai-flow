@@ -1,18 +1,29 @@
 {
   "moai_flow": {
-    "enabled": true,
     "version": "1.0.0",
+    "enabled": true,
+    "structure": "official-template-compliant",
+    "migration": {
+      "date": "2025-11-30",
+      "from": "namespaced-subdirectories",
+      "to": "flat-structure"
+    },
     "agents": [
-      "coordinator-swarm",
-      "optimizer-bottleneck",
-      "analyzer-consensus",
-      "healer-self"
+      "moai-flow-coordinator-swarm",
+      "moai-flow-optimizer-bottleneck",
+      "moai-flow-analyzer-consensus",
+      "moai-flow-healer-self"
     ],
     "commands": [
-      "swarm-init",
-      "swarm-status",
-      "topology-switch",
-      "consensus-request"
+      "/moai-flow-swarm-init",
+      "/moai-flow-swarm-status",
+      "/moai-flow-topology-switch",
+      "/moai-flow-consensus-request"
+    ],
+    "hooks": [
+      "moai-flow-pre-swarm-task",
+      "moai-flow-post-swarm-task",
+      "moai-flow-swarm-lifecycle"
     ],
     "skills": [
       "moai-flow-coordination",
@@ -20,10 +31,15 @@
       "moai-flow-optimization",
       "moai-flow-github"
     ],
+    "paths": {
+      "lib": ".moai/lib/",
+      "data": ".moai/data/",
+      "hooks_utils": "moai_flow/hooks/utils.py"
+    },
     "directories": {
-      "agents": ".claude/agents/moai-flow",
-      "commands": ".claude/commands/moai-flow",
-      "hooks": ".claude/hooks/moai-flow",
+      "agents": ".claude/agents",
+      "commands": ".claude/commands",
+      "hooks": ".claude/hooks",
       "skills": ".claude/skills",
       "output_styles": ".claude/output-styles/moai-flow"
     }

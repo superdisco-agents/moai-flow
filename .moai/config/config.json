@@ -371,5 +371,14 @@
     },
     "retention_days": 90,
     "notes": "Pattern collection system for PRD-05 Phase 1. Collects execution patterns for future ML analysis. task_completion: agent performance, error_occurrence: failure patterns, agent_usage: usage statistics, user_correction: learning from corrections."
+  },
+  "integrations": {
+    "moai_flow": {
+      "enabled": true,
+      "config": ".claude/moai-flow-config.json",
+      "structure": "official-template-compliant",
+      "migration_date": "2025-11-30",
+      "notes": "MoAI-Flow swarm coordination system integrated with official Claude Code template structure. Uses flat structure for agents/commands/hooks with moai-flow- prefix."
+    }
   }
 }
