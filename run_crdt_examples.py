@@ -12,7 +12,7 @@ import time
 # Load crdt module directly
 spec = importlib.util.spec_from_file_location(
     'crdt',
-    'moai_flow/coordination/algorithms/crdt.py'
+    'src/moai_flow/coordination/algorithms/crdt.py'
 )
 crdt_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(crdt_module)

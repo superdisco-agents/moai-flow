@@ -31,6 +31,12 @@ wheels/
 *.egg
 MANIFEST
 
+# Python src/ layout
+src/**/__pycache__/
+src/**/*.pyc
+src/**/*.pyo
+src/**/.pytest_cache/
+
 # Testing
 .pytest_cache/
 .coverage

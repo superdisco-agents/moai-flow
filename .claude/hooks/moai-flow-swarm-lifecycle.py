@@ -6,9 +6,9 @@ Manages swarm initialization and cleanup.
 import sys
 from pathlib import Path
 
-moai_flow_path = Path(__file__).parent.parent.parent.parent / "moai_flow"
+moai_flow_path = Path(__file__).parent.parent.parent.parent / "src"
 if moai_flow_path.exists():
-    sys.path.insert(0, str(moai_flow_path.parent))
+    sys.path.insert(0, str(moai_flow_path))
 
 def execute(context):
     """

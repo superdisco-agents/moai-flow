@@ -1,0 +1,12 @@
+include README.md
+include LICENSE
+include CLAUDE.md
+recursive-include src/moai_flow *.py
+recursive-include src/moai_flow py.typed
+exclude .moai
+exclude .claude
+prune .moai
+prune .claude
+prune tests
+prune examples
+prune docs
