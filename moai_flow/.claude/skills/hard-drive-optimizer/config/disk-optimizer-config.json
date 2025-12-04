@@ -1,0 +1,50 @@
+{
+  "base_directory": "/Users/rdmtv/Documents/claydev-local/",
+  "cache_ttl_hours": 24,
+  "num_workers": 16,
+  "threshold_days": 14,
+
+  "dependency_patterns": [
+    "node_modules",
+    ".venv",
+    "venv",
+    "target",
+    "vendor"
+  ],
+
+  "protected_paths": [
+    ".claude",
+    ".moai",
+    ".git"
+  ],
+
+  "cy4_scoring": {
+    "file_activity_weight": 0.40,
+    "git_activity_weight": 0.25,
+    "process_activity_weight": 0.20,
+    "ide_open_weight": 0.10,
+    "dependency_freshness_weight": 0.05
+  },
+
+  "risk_thresholds": {
+    "hot": 81,
+    "active": 61,
+    "inactive": 41,
+    "dormant": 21
+  },
+
+  "min_size_mb": 10,
+
+  "safety_checks": {
+    "check_cy4_threshold": true,
+    "check_activity_threshold": true,
+    "check_git_uncommitted": true,
+    "check_running_processes": true,
+    "check_protected_paths": true,
+    "check_editor_open": true,
+    "check_recent_git": true,
+    "check_recent_install": true,
+    "check_symlinks": true,
+    "check_min_size": true
+  }
+}

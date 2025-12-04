@@ -1,0 +1,57 @@
+---
+workflow_id: TOON-README-GEN-001
+name: Branch README Generation Pipeline
+version: 1.0.0
+part_of: collector-readme
+tier: 2
+description: Automated 7-stage pipeline for generating consistent, high-quality branch README documentation
+trigger: manual | on_branch_update | on_merge
+---
+
+@metadata[1]{id,name,version,tier,trigger}:
+TOON-README-GEN-001,Branch README Generation Pipeline,1.0.0,tier-2,manual|on_branch_update|on_merge
+
+@phases[7]{id,name,operator,mode,inputs,outputs}:
+1,Collect Branch Data,COLLECT,sequential,branch_id,branch_metadata
+2,Classify Change Type,CLASSIFY,sequential,branch_metadata|file_changes,change_classification
+3,Select Template,SELECT_TEMPLATE,sequential,classification|status,template_selection
+4,Generate Content,GENERATE,sequential,template|branch_data,markdown_sections
+5,Add Visuals,ADD_VISUALS,sequential,generated_content,content_with_charts
+6,Validate,VALIDATE,sequential,complete_content,validation_report
+7,Output,OUTPUT,sequential,validated_content,saved_files
+
+@operators[7]{name,inputs,outputs,rules}:
+COLLECT,[branch_id],[branch_metadata],sources=[git_log|git_diff|git_status|github_api|branch_history]
+CLASSIFY,[branch_metadata|files],[change_type],detect=[agent|skill|workflow|toon|command|hook|mixed]
+SELECT_TEMPLATE,[classification|status],[template],status=[ACTIVE|PR_OPEN|MERGED|STALE]
+GENERATE,[template|data],[sections],order=[header|tldr|stats|improvements|components|status|timeline|action]
+ADD_VISUALS,[content],[visual_content],charts=[pie|gantt|flowchart|xychart]
+VALIDATE,[content],[report],gates=[blocking|warning|content|links]
+OUTPUT,[validated],[files],format={DATE}_{BRANCH}_{STATUS}.md
+
+@validation[4]{gate,type,check,action}:
+gate_1,blocking,header_present|tldr_present|stats_present,error_halt
+gate_2,warning,chart_count>=1|table_count>=3,log_continue
+gate_3,content,summary_words>=50|no_placeholders,warn_continue
+gate_4,links,all_links_valid,error_halt
+
+@scoring[1]{formula}:
+(sections/mandatory*40)+(min(charts,3)/3*15)+(min(tables,3)/3*15)+(quality*20)+(links*10)
+
+@error_handling[7]{stage,strategy,fallback}:
+collect,retry_3x,skip_branch_warn
+classify,default,type=mixed
+select,fallback,template=ACTIVE
+generate,partial,use_placeholders
+visuals,skip,continue_text_only
+validate,log,continue_if_no_blocking
+output,retry,alert_on_failure
+
+@triggers[3]{type,event,condition}:
+manual,/collector:readme,--all|--force|--validate-only
+on_branch_update,git_push,branch_in_tracked
+on_merge,pr_merged,update_status_regenerate
+
+@dependencies[2]{type,sources}:
+modules,[readme-rules|quality-gates|change-type-templates|visual-enhancement-rules|best-practice-template]
+external,[collector-scanner|collector-learner|branch-database]
