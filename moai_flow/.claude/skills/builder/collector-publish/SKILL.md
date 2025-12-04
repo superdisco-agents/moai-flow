@@ -20,9 +20,23 @@ color: magenta
 
 **Push consolidated improvements to GitHub with proper workflow**
 
-> **Version**: 1.0.0
+> **Version**: 2.0.0
 > **Status**: Production Ready
 > **Part of**: MoAI Flow System
+
+---
+
+## Collector Scope
+
+> **SCOPE**: `.claude/` `.moai/` `src/moai_adk/` **ONLY**
+
+| Directory | Purpose |
+|-----------|---------|
+| `.claude/` | Claude Code config (agents, skills, commands, hooks) |
+| `.moai/` | MoAI runtime (config, specs, memory, docs) |
+| `src/moai_adk/` | Framework source code |
+
+**Excluded**: All other folders (node_modules, dist, .git, README.md, etc.)
 
 ## Quick Reference
 
@@ -387,6 +401,13 @@ git for-each-ref --sort=-committerdate --format='%(refname:short) %(committerdat
 | `commit-messages.md` | Commit message templates |
 | `pr-templates.md` | Pull request body templates |
 | `error-recovery.md` | Git error handling procedures |
+| `orphan-branch.md` | **Orphan branch creation and management** |
+
+## Templates
+
+| Template | Description |
+|----------|-------------|
+| `BRANCH-SETUP.template.md` | Branch documentation template for orphan branches |
 
 ---
 
@@ -406,4 +427,65 @@ After publishing:
 
 ---
 
-**Version**: 1.0.0 | **Status**: Production Ready | **Last Updated**: 2025-12-02
+## Level 7: Orphan Branch Publishing
+
+### Why Orphan Branches?
+
+Orphan branches contain **ONLY** scoped folders, making:
+- Clean diffs (exactly MoAI changes only)
+- Easy comparisons between branches
+- No noise from node_modules, dist, etc.
+
+### Create Orphan Branch for Publishing
+
+```bash
+# 1. Create orphan branch
+git checkout --orphan flow/consolidate-2025-12-04-001
+git rm -rf .
+
+# 2. Add ONLY scoped folders
+git checkout main -- .claude/
+git checkout main -- .moai/
+git checkout main -- src/moai_adk/
+
+# 3. Generate BRANCH-SETUP.md
+# Use template from templates/BRANCH-SETUP.template.md
+
+# 4. Commit
+git add .
+git commit -m "feat(collector): orphan branch with scoped folders
+
+Scope: .claude/ .moai/ src/moai_adk/
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+# 5. Push
+git push -u origin flow/consolidate-2025-12-04-001
+```
+
+### BRANCH-SETUP.md Placement
+
+Place in the primary skill folder being published:
+
+```
+flow/consolidate-2025-12-04-001/
+└── .claude/
+    └── skills/
+        └── {primary-skill}/
+            └── BRANCH-SETUP.md
+```
+
+### Quick Command
+
+```bash
+# Use /collector:orphan to automate
+/collector:orphan flow/consolidate-2025-12-04-001
+```
+
+See `modules/orphan-branch.md` for detailed instructions.
+
+---
+
+**Version**: 2.0.0 | **Status**: Production Ready | **Last Updated**: 2025-12-04

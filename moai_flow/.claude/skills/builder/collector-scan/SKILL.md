@@ -22,9 +22,23 @@ color: cyan
 
 **Intelligent workspace scanning and comparison for MoAI consolidation**
 
-> **Version**: 1.0.0
+> **Version**: 3.0.0
 > **Status**: Production Ready
 > **Part of**: MoAI Flow System
+
+---
+
+## Collector Scope
+
+> **SCOPE**: `.claude/` `.moai/` `src/moai_adk/` **ONLY**
+
+| Directory | Purpose |
+|-----------|---------|
+| `.claude/` | Claude Code config (agents, skills, commands, hooks) |
+| `.moai/` | MoAI runtime (config, specs, memory, docs) |
+| `src/moai_adk/` | Framework source code |
+
+**Excluded**: All other folders (node_modules, dist, .git, README.md, etc.)
 
 ## Quick Reference
 
@@ -59,8 +73,7 @@ Every MoAI workspace has these key directories:
 |-----------|----------|-----------|
 | `.claude/` | Claude Code config | `settings.json`, `agents/`, `commands/`, `skills/` |
 | `.moai/` | MoAI runtime | `config/config.json`, `specs/`, `memory/` |
-| `moai-adk/` | Framework source | `pyproject.toml`, `src/` |
-| Root | Execution directives | `CLAUDE.md`, `CLAUDE.local.md` |
+| `src/moai_adk/` | Framework source | `pyproject.toml`, `src/` |
 
 ### Scan Command Pattern
 
@@ -388,6 +401,106 @@ Beyond hashes, compare semantic content:
 
 # Comprehensive (local + all remote branches)
 /collector:scan --mode multi --repo superdisco-agents/moai-adk
+```
+
+---
+
+## Level 6: Orphan Branch Detection
+
+### What is an Orphan Branch?
+
+Orphan 브랜치는 **스코프된 폴더만** 포함하는 브랜치:
+
+```
+Proper Orphan Branch:
+├── .claude/     ✓
+├── .moai/       ✓
+└── src/         ✓ (containing moai_adk/)
+
+NOT Orphan (has extra files):
+├── .claude/
+├── .moai/
+├── src/
+├── README.md    ✗ Extra
+├── package.json ✗ Extra
+└── node_modules/✗ Extra
+```
+
+### Detection Logic
+
+```bash
+# Get root-level contents of a branch
+git ls-tree --name-only HEAD
+
+# For proper orphan, should return ONLY:
+# .claude
+# .moai
+# src
+```
+
+### Validation Function
+
+```python
+def is_orphan_branch(branch_name: str) -> dict:
+    """Check if branch is properly scoped orphan branch."""
+    import subprocess
+
+    result = subprocess.run(
+        ['git', 'ls-tree', '--name-only', branch_name],
+        capture_output=True, text=True
+    )
+
+    root_items = set(result.stdout.strip().split('\n'))
+    allowed = {'.claude', '.moai', 'src'}
+
+    is_orphan = root_items.issubset(allowed)
+    extra_items = root_items - allowed
+
+    return {
+        "branch": branch_name,
+        "is_orphan": is_orphan,
+        "root_items": list(root_items),
+        "extra_items": list(extra_items),
+        "recommendation": "OK" if is_orphan else "Convert with /collector:orphan"
+    }
+```
+
+### Scan Report Addition
+
+When scanning branches, include orphan status:
+
+```json
+{
+  "branches": [
+    {
+      "name": "feature/response-assistant-korean",
+      "is_orphan": true,
+      "root_items": [".claude"],
+      "status": "COMPLIANT"
+    },
+    {
+      "name": "feature/old-branch",
+      "is_orphan": false,
+      "root_items": [".claude", ".moai", "README.md", "package.json"],
+      "extra_items": ["README.md", "package.json"],
+      "status": "NEEDS_CONVERSION",
+      "recommendation": "Run /collector:orphan feature/old-branch convert"
+    }
+  ]
+}
+```
+
+### Quick Commands
+
+```bash
+# Check single branch
+/collector:scan --check-orphan feature/my-branch
+
+# Scan all branches for orphan compliance
+/collector:scan --mode branches --check-orphan-all
+
+# List non-compliant branches
+/collector:scan --mode branches --non-orphan-only
 ```
 
 ---
