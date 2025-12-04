@@ -1,0 +1,130 @@
+# WORKFLOW: github-sync
+# VERSION: 1.0.0
+# DESCRIPTION: Orchestrates bidirectional synchronization between local repository and GitHub remote
+
+workflow:
+  name: github-sync
+  version: 1.0.0
+  type: orchestrator
+  category: integration
+
+  metadata:
+    owner: collector-orchestrator
+    triggers:
+      - manual
+      - scheduled
+      - post-commit
+    dependencies:
+      - git-collector
+      - github-collector
+      - quality-gate
+
+  steps:
+    - id: step-01-scan
+      name: Scan Repositories
+      type: analysis
+      agent: git-collector
+      required: true
+      parallel: false
+      file: steps/step-01-scan.md
+
+    - id: step-02-learn
+      name: Score and Analyze
+      type: learning
+      agent: collector-orchestrator
+      required: true
+      parallel: false
+      depends_on:
+        - step-01-scan
+      file: steps/step-02-learn.md
+
+    - id: step-03-decide
+      name: Present Decisions
+      type: decision
+      agent: collector-orchestrator
+      required: true
+      parallel: false
+      depends_on:
+        - step-02-learn
+      file: steps/step-03-decide.md
+
+    - id: step-04-merge
+      name: Apply Changes
+      type: execution
+      agent: git-collector
+      required: true
+      parallel: false
+      depends_on:
+        - step-03-decide
+      file: steps/step-04-merge.md
+
+    - id: step-05-publish
+      name: Create Pull Request
+      type: integration
+      agent: github-collector
+      required: false
+      parallel: false
+      depends_on:
+        - step-04-merge
+      conditions:
+        - bidirectional_mode: true
+        - has_local_changes: true
+      file: steps/step-05-publish.md
+
+  inputs:
+    - name: sync_mode
+      type: enum
+      required: true
+      values: [unidirectional, bidirectional]
+      default: unidirectional
+      description: Direction of sync (GitHub -> Local or both ways)
+
+    - name: branch_filter
+      type: string
+      required: false
+      default: "main,develop"
+      description: Comma-separated list of branches to sync
+
+    - name: auto_approve
+      type: boolean
+      required: false
+      default: false
+      description: Automatically approve low-risk changes
+
+    - name: create_pr
+      type: boolean
+      required: false
+      default: true
+      description: Create PR for bidirectional sync
+
+  outputs:
+    - name: sync_report
+      type: object
+      description: Detailed report of synchronization operations
+
+    - name: changes_applied
+      type: array
+      description: List of changes that were applied
+
+    - name: pr_url
+      type: string
+      description: URL of created pull request (if applicable)
+
+    - name: conflicts_detected
+      type: array
+      description: List of conflicts requiring manual resolution
+
+  error_handling:
+    on_failure:
+      - rollback_changes
+      - notify_user
+      - log_error
+
+    retry_policy:
+      max_attempts: 3
+      backoff: exponential
+
+  success_criteria:
+    - all_changes_applied
+    - no_unresolved_conflicts
+    - quality_gates_passed

@@ -1,0 +1,119 @@
+# Branch Review Workflow
+# Auto-generated TOON workflow for comprehensive branch documentation
+
+workflow:
+  name: "branch-review"
+  version: "1.0.0"
+  description: "Generate comprehensive branch documentation and analysis"
+
+  inputs:
+    - name: "branch_name"
+      type: "string"
+      required: true
+      description: "Name of the branch to review"
+
+    - name: "repository"
+      type: "string"
+      required: false
+      description: "Repository name (defaults to current repo)"
+
+    - name: "base_branch"
+      type: "string"
+      required: false
+      default: "main"
+      description: "Base branch to compare against"
+
+    - name: "include_diff"
+      type: "boolean"
+      required: false
+      default: true
+      description: "Include detailed diff analysis"
+
+  outputs:
+    - name: "branch_readme"
+      type: "file"
+      description: "Generated branch README.md"
+
+    - name: "analysis_report"
+      type: "object"
+      description: "Branch analysis metadata and scores"
+
+    - name: "summary"
+      type: "string"
+      description: "Human-readable summary for display"
+
+  steps:
+    - id: "step-01-fetch"
+      name: "Fetch Branch Information"
+      type: "action"
+      script: "./steps/step-01-fetch.md"
+      inputs:
+        - branch_name: "${workflow.inputs.branch_name}"
+        - repository: "${workflow.inputs.repository}"
+        - base_branch: "${workflow.inputs.base_branch}"
+      outputs:
+        - branch_data: "object"
+        - commits: "array"
+        - files_changed: "array"
+      on_error: "fail"
+
+    - id: "step-02-analyze"
+      name: "Score and Analyze Branch"
+      type: "action"
+      script: "./steps/step-02-analyze.md"
+      depends_on: ["step-01-fetch"]
+      inputs:
+        - branch_data: "${steps.step-01-fetch.outputs.branch_data}"
+        - commits: "${steps.step-01-fetch.outputs.commits}"
+        - files_changed: "${steps.step-01-fetch.outputs.files_changed}"
+        - include_diff: "${workflow.inputs.include_diff}"
+      outputs:
+        - analysis_scores: "object"
+        - risk_assessment: "object"
+        - recommendations: "array"
+      on_error: "fail"
+
+    - id: "step-03-generate-readme"
+      name: "Generate Branch README"
+      type: "action"
+      script: "./steps/step-03-generate-readme.md"
+      depends_on: ["step-01-fetch", "step-02-analyze"]
+      inputs:
+        - branch_data: "${steps.step-01-fetch.outputs.branch_data}"
+        - commits: "${steps.step-01-fetch.outputs.commits}"
+        - files_changed: "${steps.step-01-fetch.outputs.files_changed}"
+        - analysis_scores: "${steps.step-02-analyze.outputs.analysis_scores}"
+        - risk_assessment: "${steps.step-02-analyze.outputs.risk_assessment}"
+        - recommendations: "${steps.step-02-analyze.outputs.recommendations}"
+      outputs:
+        - readme_path: "string"
+        - readme_content: "string"
+      on_error: "fail"
+
+    - id: "step-04-report"
+      name: "Display Summary"
+      type: "action"
+      script: "./steps/step-04-report.md"
+      depends_on: ["step-03-generate-readme"]
+      inputs:
+        - branch_data: "${steps.step-01-fetch.outputs.branch_data}"
+        - analysis_scores: "${steps.step-02-analyze.outputs.analysis_scores}"
+        - risk_assessment: "${steps.step-02-analyze.outputs.risk_assessment}"
+        - readme_path: "${steps.step-03-generate-readme.outputs.readme_path}"
+      outputs:
+        - summary: "string"
+      on_error: "warn"
+
+  final_outputs:
+    branch_readme: "${steps.step-03-generate-readme.outputs.readme_path}"
+    analysis_report:
+      scores: "${steps.step-02-analyze.outputs.analysis_scores}"
+      risk: "${steps.step-02-analyze.outputs.risk_assessment}"
+      recommendations: "${steps.step-02-analyze.outputs.recommendations}"
+    summary: "${steps.step-04-report.outputs.summary}"
+
+  metadata:
+    author: "moai-builder/collector-orchestrator"
+    created: "2025-12-04"
+    tags: ["branch", "documentation", "analysis", "git", "github"]
+    integration: "collector-readme"
